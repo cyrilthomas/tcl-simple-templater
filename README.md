@@ -4,6 +4,7 @@ microTemplateParser
 A micro html template parser for TCL (inspired from Python Django)
 
 Basically converts a HTML template like this
+```
 <html>
     <body>
         <p style="bold">{{ item_no }}</p>
@@ -34,9 +35,9 @@ Basically converts a HTML template like this
         </table>
     </body>
 </html>
-
+```
 Into this
-
+```
 <html>
     <body>
         <p style="bold">dance</p>
@@ -76,3 +77,4 @@ Into this
         </table>
     </body>
 </html>
+```
