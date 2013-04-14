@@ -2,42 +2,6 @@
 
 # TCL micro template parser
 
-set example {
-<html>
-    <body>
-        <p style="bold">{{ item_no }}</p>
-        {% if item_no == 'dance' %}
-        <p><b>yes it is dance</b></p>
-        {% endif %}
-        <p>{{ legacy_order_no }}</p>
-        <table>
-            <tr>
-                <td>
-                    <table border="1">
-                    {% for item_list in rows %}
-                        <tr>
-                            <td>{{ loop.count }}</td>
-                            <td>Main:{{ item_list[0] }}</td>
-                            <td>Main:{{ item_list[1] }}</td>
-                            {% for j in 'unit_test1 unit_test2' %}
-                            <td>Inner:{{ j }}</td>
-                            {% endfor %}
-                            <td>Last</td>
-                        </tr>
-                    {% endfor %}
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </body>
-</html>
-}
-
-
-set fh [open /tmp/template.htm w]
-puts $fh $example
-close $fh
-
 namespace eval ::microTemplateParser {
     variable debug
     variable BufferOut
@@ -46,9 +10,11 @@ namespace eval ::microTemplateParser {
     variable block_pattern
     variable block_end_pattern
     variable lappendCmd
+    variable loop
 
     set debug 0    
     set BufferOut ""
+    set loop(last_loop) ""
     set functions {
         for
         if
@@ -80,7 +46,7 @@ namespace eval ::microTemplateParser {
         lappend BufferOut $msg
     }
 
-    proc processBlock_for { params } {
+    proc processFunc_for { params } {
         set function    [lindex $params 0]
         set iter        [lindex $params 1]
         set operator    [lindex $params 2]
@@ -88,6 +54,9 @@ namespace eval ::microTemplateParser {
         set operators {
             in
         }
+        incr ::microTemplateParser::loop_cnt
+        set ::microTemplateParser::loop(last_loop) "for_${::microTemplateParser::loop_cnt}"
+        set ::microTemplateParser::loop($::microTemplateParser::loop(last_loop)) 0
 
         if { $operator ni $operators } { error "Unsupported operator '$operator' used!" }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
@@ -97,7 +66,7 @@ namespace eval ::microTemplateParser {
         }        
     }
 
-    proc processBlock_if { params } {
+    proc processFunc_if { params } {
         set function    [lindex $params 0]
         set iter        [lindex $params 1]
         set operator    [lindex $params 2]
@@ -121,9 +90,12 @@ namespace eval ::microTemplateParser {
         }
     }
 
-    proc processBlock { line } {
+    proc processLine { line } {
         variable debug
         variable lappendCmd
+        variable loop
+
+        regsub -all "{{ *loop.count *}}" $line "\$::microTemplateParser::loop($loop(last_loop))" line
 
         if { [regexp "{{ *(\\w+) *}}" $line --> object] } {
             if { $debug } { puts "token : $object" }
@@ -152,7 +124,10 @@ namespace eval ::microTemplateParser {
                 if { $debug } { puts "function:$function iter:$iter operator:$operator limiter:$limiter" }
                 set params [list $function $iter $operator $limiter]
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
-                bufferOut "${indent}[processBlock_${function} $params]"
+                bufferOut "${indent}[processFunc_${function} $params]"
+                if { $function in [list for] } {
+                    bufferOut "[string repeat " " 4]${indent}incr ::microTemplateParser::loop($::microTemplateParser::loop(last_loop))"
+                }
                 continue
             }
 
@@ -162,7 +137,7 @@ namespace eval ::microTemplateParser {
                 continue
             }
 
-            bufferOut [processBlock $line]
+            bufferOut [processLine $line]
         }
 
         return [join $BufferOut \n]
@@ -185,40 +160,76 @@ namespace eval ::microTemplateParser {
         # if { $debug } { puts $errMsg; return }
         return [join $html \n]
     }
-
 }
 
-set templateParseObj [dict create]
 
-set rows ""
-foreach { v1 v2 } {
-    hello world
-    good bye
-    dance party
-} {
-    set row ""
-    lappend row $v1 $v2
-    lappend rows $row
+if { $argv0 == [info script] } {
+    set example {
+<html>
+    <body>
+        <p style="bold">{{ item_no }}</p>
+        {% if item_no == 'dance' %}
+        <p><b>yes it is dance</b></p>
+        {% endif %}
+        <p>{{ legacy_order_no }}</p>
+        <table>
+            <tr>
+                <td>
+                    <table border="1">
+                    {% for item_list in rows %}
+                        <tr>
+                            <td>{{ loop.count }}</td>
+                            <td>Main:{{ item_list[0] }}</td>
+                            <td>Main:{{ item_list[1] }}</td>
+                            {% if legacy_order_no > '100' %}
+                                {% for j in 'unit_test1 unit_test2' %}
+                                <td>Inner:{{ j }}</td>
+                                {% endfor %}
+                            {% endif %}
+                            <td>Last</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+    }
+
+
+    set fh [open /tmp/template.htm w]
+    puts $fh $example
+    close $fh
+
+    set rows ""
+    foreach { v1 v2 } {
+        hello world
+        good bye
+        dance party
+    } {
+        set row ""
+        lappend row $v1 $v2
+        lappend rows $row
+    }
+     
+    # set ::microTemplateParser::debug 1
+    set html [::microTemplateParser::renderHtml "/tmp/template.htm" {
+        item_nos        "[list 10 20 30]"
+
+        legacy_order_no {1000}
+
+        rows            "$rows"
+
+        sample          "[list \
+                            [list test00 test01] \
+                            [list test10 test11] \
+                            [list test12 test13] \
+                            [list test14 test15] \
+                        ]"
+        item_no         {dance}
+    }]
+
+    # parray ::microTemplateParser::object
+    puts "$html"
 }
- 
-set ::microTemplateParser::debug 1
-set html [::microTemplateParser::renderHtml "/tmp/template.htm" {
-    item_nos        "[list 10 20 30]"
-
-    legacy_order_no {100000}
-
-    rows            "$rows"
-
-    sample          "[list \
-                        [list test00 test01] \
-                        [list test10 test11] \
-                        [list test12 test13] \
-                        [list test14 test15] \
-                    ]"
-    item_no         "dance"
-}]
-
-
-# parray ::microTemplateParser::object
-
-puts "$html"
