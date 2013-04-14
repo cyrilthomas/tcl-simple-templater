@@ -222,17 +222,6 @@ if { $argv0 == [info script] } {
     set fh [open /tmp/template.htm w]
     puts $fh $example
     close $fh
-
-    set rows ""
-    foreach { v1 v2 } {
-        hello world
-        good bye
-        dance party
-    } {
-        set row ""
-        lappend row $v1 $v2
-        lappend rows $row
-    }
      
     # set ::microTemplateParser::debug 1
     set html [::microTemplateParser::renderHtml "/tmp/template.htm" {
@@ -240,7 +229,11 @@ if { $argv0 == [info script] } {
 
         legacy_order_no {1000}
 
-        rows            "$rows"
+        rows            {
+                            {hello world}
+                            {good bye}
+                            {dance party}
+                        }
 
         sample          "[list \
                             [list test00 test01] \
