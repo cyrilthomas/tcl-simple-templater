@@ -43,7 +43,11 @@ When provided the necessary parameters as
 
         legacy_order_no {1000}
 
-        rows            "$rows"
+        rows            {
+                            {hello world}
+                            {good bye}
+                            {dance party}
+                        }
 
         sample          "[list \
                             [list test00 test01] \
