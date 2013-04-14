@@ -36,6 +36,24 @@ Basically converts a HTML template like this
     </body>
 </html>
 ```
+When provided the necessary parameters as
+```
+::microTemplateParser::renderHtml "/tmp/template.htm" {
+        item_nos        "[list 10 20 30]"
+
+        legacy_order_no {1000}
+
+        rows            "$rows"
+
+        sample          "[list \
+                            [list test00 test01] \
+                            [list test10 test11] \
+                            [list test12 test13] \
+                            [list test14 test15] \
+                        ]"
+        item_no         {dance}
+}
+```    
 Into this
 ```
 <html>
