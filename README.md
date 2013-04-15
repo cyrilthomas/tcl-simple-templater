@@ -19,14 +19,17 @@ Basically converts a HTML template like this
                     {% for item_list in rows %}
                         <tr>
                             <td>{{ loop.count }}</td>
-                            <td>Main:{{ item_list[0] }}</td>
-                            <td>Main:{{ item_list[1] }}</td>
+                            <td>Main:{{ item_list.0 }} [Sample Text] </td>
+                            <td>Main:{{ item_list.1 }}</td>
                             {% if legacy_order_no > '100' %}
                                 {% for j in 'unit_test1 unit_test2' %}
+                                <td>{{ loop.count }}</td>
                                 <td>Inner:{{ j }}</td>
                                 {% endfor %}
                             {% endif %}
                             <td>Last</td>
+                            <td>{{ loop.count }}</td>
+                            <td>$test [info hostname]</td>
                         </tr>
                     {% endfor %}
                     </table>
@@ -71,27 +74,39 @@ Into this
                     <table border="1">
                         <tr>
                             <td>1</td>
-                            <td>Main:hello</td>
+                            <td>Main:hello [Sample Text] </td>
                             <td>Main:world</td>
+                                <td>1</td>
                                 <td>Inner:unit_test1</td>
+                                <td>2</td>
                                 <td>Inner:unit_test2</td>
                             <td>Last</td>
+                            <td>1</td>
+                            <td>$test [info hostname]</td>
                         </tr>
                         <tr>
                             <td>2</td>
-                            <td>Main:good</td>
+                            <td>Main:good [Sample Text] </td>
                             <td>Main:bye</td>
+                                <td>1</td>
                                 <td>Inner:unit_test1</td>
+                                <td>2</td>
                                 <td>Inner:unit_test2</td>
                             <td>Last</td>
+                            <td>2</td>
+                            <td>$test [info hostname]</td>
                         </tr>
                         <tr>
                             <td>3</td>
-                            <td>Main:dance</td>
+                            <td>Main:dance [Sample Text] </td>
                             <td>Main:party</td>
+                                <td>1</td>
                                 <td>Inner:unit_test1</td>
+                                <td>2</td>
                                 <td>Inner:unit_test2</td>
                             <td>Last</td>
+                            <td>3</td>
+                            <td>$test [info hostname]</td>
                         </tr>
                     </table>
                 </td>
