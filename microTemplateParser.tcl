@@ -136,6 +136,20 @@ namespace eval ::microTemplateParser {
                 continue
             }
 
+            if {
+                [apply { { line out_var } {
+                    upvar $out_var out
+                    set out ""
+                    if { [regexp "{% *(else) *%}" $line --> object] } {
+                        set out "\} else \{"
+                        return 1
+                    }
+                    return 0
+                }} $line else_block]
+            } {
+                bufferOut "${indent}$else_block"
+                continue
+            }
             if { [regexp "(^ *)$block_end_pattern" $line --> indent function_close] } {
                 set function [lindex $call_stack end]
                 set call_stack [lrange $call_stack 0 end-1]
@@ -180,7 +194,9 @@ namespace eval ::microTemplateParser {
     }
 }
 
-
+#-------------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------------
 if { $argv0 == [info script] } {
     set example {
 <html>
@@ -188,6 +204,8 @@ if { $argv0 == [info script] } {
         <p style="bold">{{ item_no }}</p>
         {% if item_no == 'dance' %}
         <p><b>yes it is dance</b></p>
+        {% else %}
+        <p><b>no it is not dance</b></p>
         {% endif %}
         <p>{{ legacy_order_no }}</p>
         <table>
