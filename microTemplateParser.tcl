@@ -97,17 +97,19 @@ namespace eval ::microTemplateParser {
         variable lappendCmd
         variable loop
 
+        regsub -all {([][$\\])} $line {\\\1} line ;# disable command executions
         regsub -all "{{ *loop.count *}}" $line "\$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))" line
-
+        
         if { [regexp "{{ *(\\w+) *}}" $line --> object] } {
             if { $debug } { puts "token : $object" }
             regsub -all "{{ *(\\w+) *}}" $line "\$::microTemplateParser::object(\\1)" line
         }
 
-        if { [regexp "{{ *(\\w+)\[\[\](\\d+)\[\]\] *}}" $line --> object index] } {
+        if { [regexp "{{ *(\\w+)\.(\\d+) *}}" $line --> object index] } {
             if { $debug } { puts "token: $object index: $index" }
-            regsub "{{ *(\\w+)\[\[\](\\d+)\[\]\] *}}" $line "\[lindex \$::microTemplateParser::object(\\1) \\2\]" line
+            regsub -all "{{ *(\\w+)\.(\\d+) *}}" $line "\[lindex \$::microTemplateParser::object(\\1) \\2\]" line
         }
+
         return "$lappendCmd \"[dquoteEscape $line]\""
     }
 
@@ -198,8 +200,9 @@ if { $argv0 == [info script] } {
                     {% for item_list in rows %}
                         <tr>
                             <td>{{ loop.count }}</td>
-                            <td>Main:{{ item_list[0] }}</td>
-                            <td>Main:{{ item_list[1] }}</td>
+                            <td>Main:{{ item_list.0 }} [Sample Text] </td>
+                            <td>Main:{{ item_list.1 }}</td>
+                            <td>Main Full:'{{ item_list.0 }}:{{ item_list.1 }}'</td>
                             {% if legacy_order_no > '100' %}
                                 {% for j in 'unit_test1 unit_test2' %}
                                 <td>{{ loop.count }}</td>
@@ -208,6 +211,7 @@ if { $argv0 == [info script] } {
                             {% endif %}
                             <td>Last</td>
                             <td>{{ loop.count }}</td>
+                            <td>$test [info hostname]</td>
                         </tr>
                     {% endfor %}
                     </table>
