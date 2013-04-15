@@ -83,7 +83,6 @@ namespace eval ::microTemplateParser {
 
     proc processLine { line } {
         variable debug
-        variable lappendCmd
         variable loop
 
         regsub -all {([][$\\])} $line {\\\1} line ;# disable command executions
@@ -99,7 +98,7 @@ namespace eval ::microTemplateParser {
             regsub -all "{{ *(\\w+)\.(\\d+) *}}" $line "\[lindex \$::microTemplateParser::object(\\1) \\2\]" line
         }
 
-        return "$lappendCmd \"[dquoteEscape $line]\""
+        return [dquoteEscape $line]
     }
 
     proc parser { template_handle } {
@@ -161,7 +160,7 @@ namespace eval ::microTemplateParser {
                 continue
             }
 
-            bufferOut [processLine $line]
+            bufferOut "$lappendCmd \"[processLine $line]\""
         }
 
         return [join $BufferOut \n]
