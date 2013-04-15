@@ -4,19 +4,13 @@
 
 namespace eval ::microTemplateParser {
     variable debug
-    variable BufferOut
     variable functions
     variable operators
     variable block_pattern
     variable block_end_pattern
     variable lappendCmd
-    variable loop
-    variable loop_cnt
 
-    set debug 0    
-    set BufferOut ""
-    set loop(last_loop) ""
-    set loop_cnt 0
+    set debug 0
     set functions {
         for
         if
@@ -30,11 +24,9 @@ namespace eval ::microTemplateParser {
         >=
         ni
         ==
-        !=        
+        !=
     }
 
-    set old_limiter "\\w+"
-    set limiter ""
     set block_pattern       "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+|'\\w+\\s*\\w*') *%}"
     set block_end_pattern   "{% *end([join $functions |]) *%}"
     set lappendCmd          "lappend ::microTemplateParser::html"
@@ -57,15 +49,12 @@ namespace eval ::microTemplateParser {
             in
         }
 
-        
-        set ::microTemplateParser::loop($::microTemplateParser::loop(last_loop)) 0
-
         if { $operator ni $operators } { error "Unsupported operator '$operator' used!" }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
             return "foreach ::microTemplateParser::object($iter) \[list $new_limiter\] \{"    
         } else {
             return "foreach ::microTemplateParser::object($iter) \$::microTemplateParser::object($limiter) \{"
-        }        
+        }
     }
 
     proc processFunc_if { params } {
@@ -168,17 +157,25 @@ namespace eval ::microTemplateParser {
         variable object
         variable debug
         variable html
+        variable BufferOut
+        variable loop
+        variable loop_cnt
 
+        set BufferOut ""
         set html ""
         set output ""
-        catch { unset $object }
+        set loop(last_loop) 0
+        set loop(0) 0
+        set loop_cnt 0
         array set object [uplevel subst "{$obj}"]
+
         set fh [open $template r]
         set output [parser $fh]
         close $fh
         if { $debug } { puts $output }
         eval $output
         # if { $debug } { puts $errMsg; return }
+        unset object
         return [join $html \n]
     }
 }
@@ -211,7 +208,7 @@ if { $argv0 == [info script] } {
                             {% endif %}
                             <td>Last</td>
                             <td>{{ loop.count }}</td>
-                            <td>$test [info hostname]</td>
+                            <td>"$test [info hostname]"</td>
                         </tr>
                     {% endfor %}
                     </table>
@@ -227,7 +224,7 @@ if { $argv0 == [info script] } {
     puts $fh $example
     close $fh
      
-    # set ::microTemplateParser::debug 1
+    set ::microTemplateParser::debug 1
     set html [::microTemplateParser::renderHtml "/tmp/template.htm" {
         item_nos        "[list 10 20 30]"
 
