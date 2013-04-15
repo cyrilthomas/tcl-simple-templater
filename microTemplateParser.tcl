@@ -224,7 +224,7 @@ if { $argv0 == [info script] } {
     puts $fh $example
     close $fh
      
-    set ::microTemplateParser::debug 1
+    # set ::microTemplateParser::debug 1
     set html [::microTemplateParser::renderHtml "/tmp/template.htm" {
         item_nos        "[list 10 20 30]"
 
