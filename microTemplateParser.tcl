@@ -3,12 +3,6 @@
 # TCL micro template parser
 
 namespace eval ::microTemplateParser {
-    variable debug
-    variable functions
-    variable operators
-    variable block_pattern
-    variable block_end_pattern
-    variable lappendCmd
 
     set debug 0
     set functions {
@@ -16,20 +10,29 @@ namespace eval ::microTemplateParser {
         if
     }
 
-    set operators {
-        in
-        <
-        >
-        <=
-        >=
-        ni
-        ==
-        !=
+    set functions_with_index {
+        if
     }
 
-    set block_pattern       "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+|'\\w+\\s*\\w*') *%}"
-    set block_end_pattern   "{% *end([join $functions |]) *%}"
-    set lappendCmd          "lappend ::microTemplateParser::html"
+    array set function_operators {
+        for { in }
+        if  { in < > <= >= ni == != }
+    }
+
+    array set _op {}
+    foreach { key val } [array get function_operators] {
+        foreach v $val {
+            set _op($v) ""
+        }
+    }
+    set operators [array names _op]
+    unset _op key val v
+
+    set function_pattern            "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+|'\\w+\\s*\\w*') *%}"
+    set function_pattern_with_index "{% *([join $functions_with_index |]) +(\\w+\.?\\d*) +([join $operators |]) +(\\w+\.?\\d*|'\\w+\\s*\\w*') *%}"
+    set function_end_pattern        "{% *end([join $functions |]) *%}"
+
+    set lappendCmd                  "lappend ::microTemplateParser::html"
 
     proc dquoteEscape { str } {
         return [regsub -all {"} $str {\"}]
@@ -41,15 +44,13 @@ namespace eval ::microTemplateParser {
     }
 
     proc processFunc_for { params } {
+        variable function_operators
         set function    [lindex $params 0]
         set iter        [lindex $params 1]
         set operator    [lindex $params 2]
         set limiter     [lindex $params 3]
-        set operators {
-            in
-        }
 
-        if { $operator ni $operators } { error "Unsupported operator '$operator' used!" }
+        if { $operator ni $function_operators($function) } { error "Unsupported operator '$operator' used!" }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
             return "foreach ::microTemplateParser::object($iter) \[list $new_limiter\] \{"    
         } else {
@@ -58,27 +59,43 @@ namespace eval ::microTemplateParser {
     }
 
     proc processFunc_if { params } {
+        variable function_operators
         set function    [lindex $params 0]
         set iter        [lindex $params 1]
         set operator    [lindex $params 2]
         set limiter     [lindex $params 3]
-        set operators {
-            in
-            <
-            >
-            <=
-            >=
-            ni
-            ==
-            !=
-        }
 
-        if { $operator ni $operators } { error "Unsupported operator '$operator' used!" }
+        if { $operator ni $function_operators($function) } { error "Unsupported operator '$operator' used!" }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
             return "if \{ \$::microTemplateParser::object($iter) $operator \[list $new_limiter\] \} \{"    
         } else {
             return "if \{ \$::microTemplateParser::object($iter) $operator \$::microTemplateParser::object($limiter) \} \{"
         }
+    }
+
+    proc processFuncWithIndex_if { params } {
+        variable function_operators
+        set function    [lindex $params 0]
+        set iter        [lindex $params 1]
+        set operator    [lindex $params 2]
+        set limiter     [lindex $params 3]
+
+        if { $operator ni $function_operators($function) } { error "Unsupported operator '$operator' used!" }
+        set iter_index      ""
+        set limiter_index   ""
+        foreach { iter iter_index } [split $iter] break
+        if { $iter_index == "" } { set iter_index 0 }
+        set iter "\[lindex \$::microTemplateParser::object($iter) $iter_index\]"
+
+        if { [regexp "'(.*)'" $limiter --> new_limiter] } {
+            set limiter "\"$new_limiter\""
+        } else {
+            foreach { limiter limiter_index } [split $limiter] break
+            if { $limiter_index == "" } { set limiter_index 0 }
+            set limiter "\[lindex \$::microTemplateParser::object($limiter) $limiter_index\]"
+            return "if \{ \$::microTemplateParser::object($iter) $operator \$::microTemplateParser::object($limiter) \} \{"
+        }
+        return "if \{ $iter $operator $limiter \} \{"
     }
 
     proc processLine { line } {
@@ -105,8 +122,9 @@ namespace eval ::microTemplateParser {
         variable object
         variable debug
         variable BufferOut
-        variable block_pattern
-        variable block_end_pattern
+        variable function_pattern
+        variable function_end_pattern
+        variable function_pattern_with_index
         variable lappendCmd 
 
         set loop_enabled {
@@ -118,7 +136,7 @@ namespace eval ::microTemplateParser {
         while { ![eof $template_handle] } {
             set line [gets $template_handle]
 
-            if { [regexp "(^ *)$block_pattern" $line --> indent function iter operator limiter] } {
+            if { [regexp "(^ *)$function_pattern" $line --> indent function iter operator limiter] } {
                 if { $debug } { puts "function:$function iter:$iter operator:$operator limiter:$limiter" }
                 lappend call_stack $function
                 set params [list $function $iter $operator $limiter]
@@ -132,6 +150,15 @@ namespace eval ::microTemplateParser {
                 if { $function in $loop_enabled } {
                     bufferOut "[string repeat " " 4]${indent}incr ::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))"
                 }
+                continue
+            } elseif { [regexp "(^ *)$function_pattern_with_index" $line --> indent function iter operator limiter] } {
+                foreach { iter iter_index } [split $iter .] break
+                foreach { limiter limiter_index } [split $limiter .] break
+                if { $debug } { puts "function:$function iter:$iter index:$iter_index operator:$operator limiter:$limiter index:$limiter_index" }
+                lappend call_stack $function
+                set params [list $function [list $iter $iter_index] $operator [list $limiter $limiter_index]]
+                set indent "${indent}[string repeat " " [string length $lappendCmd]]"
+                bufferOut "${indent}[processFuncWithIndex_${function} $params]"
                 continue
             }
 
@@ -149,7 +176,7 @@ namespace eval ::microTemplateParser {
                 bufferOut "${indent}$else_block"
                 continue
             }
-            if { [regexp "(^ *)$block_end_pattern" $line --> indent function_close] } {
+            if { [regexp "(^ *)$function_end_pattern" $line --> indent function_close] } {
                 set function [lindex $call_stack end]
                 set call_stack [lrange $call_stack 0 end-1]
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
@@ -214,7 +241,11 @@ if { $argv0 == [info script] } {
                     {% for item_list in rows %}
                         <tr>
                             <td>{{ loop.count }}</td>
+                            {% if item_list.0 == 'hello' %}
+                            <td>Main:Special text </td>
+                            {% else %}
                             <td>Main:{{ item_list.0 }} [Sample Text] </td>
+                            {% endif %}
                             <td>Main:{{ item_list.1 }}</td>
                             <td>Main Full:'{{ item_list.0 }}:{{ item_list.1 }}'</td>
                             {% if legacy_order_no > '100' %}
