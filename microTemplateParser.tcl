@@ -28,8 +28,9 @@ namespace eval ::microTemplateParser {
     set operators [array names _op]
     unset _op key val v
 
-    set function_pattern            "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+|'\\w+\\s*\\w*') *%}"
-    set function_pattern_with_index "{% *([join $functions_with_index |]) +(\\w+\.?\\d*) +([join $operators |]) +(\\w+\.?\\d*|'\\w+\\s*\\w*') *%}"
+    set additional_attributes       "loop.count"
+    set function_pattern            "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+|'.*') *%}"
+    set function_pattern_with_index "{% *([join $functions_with_index |]) +(\\w+\.?\\d*|[join $additional_attributes |]) +([join $operators |]) +(\\w+\.?\\d*|[join $additional_attributes |]|'.*') *%}"
     set function_end_pattern        "{% *end([join $functions |]) *%}"
 
     set lappendCmd                  "lappend ::microTemplateParser::html"
@@ -85,7 +86,11 @@ namespace eval ::microTemplateParser {
         set limiter_index   ""
         foreach { iter iter_index } [split $iter] break
         if { $iter_index == "" } { set iter_index 0 }
-        set iter "\[lindex \$::microTemplateParser::object($iter) $iter_index\]"
+        if { $iter == "loop" && $iter_index== "count" } {
+            set iter "\$::microTemplateParser::object(loop.count)"
+        } else {
+            set iter "\[lindex \$::microTemplateParser::object($iter) $iter_index\]"
+        }
 
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
             set limiter "\"$new_limiter\""
@@ -103,7 +108,8 @@ namespace eval ::microTemplateParser {
         variable loop
 
         regsub -all {([][$\\])} $line {\\\1} line ;# disable command executions
-        regsub -all "{{ *loop.count *}}" $line "\$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))" line
+        # regsub -all "{{ *loop.count *}}" $line "\$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))" line
+        regsub -all "{{ *loop.count *}}" $line "\$::microTemplateParser::object(loop.count)" line
         
         if { [regexp "{{ *(\\w+) *}}" $line --> object] } {
             if { $debug } { puts "token : $object" }
@@ -116,6 +122,15 @@ namespace eval ::microTemplateParser {
         }
 
         return [dquoteEscape $line]
+    }
+
+    proc codeGenerator { code } {
+        set fh [open generated_code.tcl w]
+        puts $fh "#!/usr/bin/tclsh"
+        puts $fh "namespace eval ::microTemplateParser {}"
+        puts $fh "array set ::microTemplateParser::object {\n    [array get ::microTemplateParser::object]\n}\n"
+        puts $fh "$code"
+        close $fh
     }
 
     proc parser { template_handle } {
@@ -145,10 +160,12 @@ namespace eval ::microTemplateParser {
                 if { $function in $loop_enabled } {
                     bufferOut "${indent}set ::microTemplateParser::loop(last_loop) \[incr ::microTemplateParser::loop_cnt\]"
                     bufferOut "${indent}set ::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop)) 0"
+                    bufferOut "${indent}set ::microTemplateParser::object(loop.count) \$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))"
                 }
                 bufferOut "${indent}[processFunc_${function} $params]"
                 if { $function in $loop_enabled } {
                     bufferOut "[string repeat " " 4]${indent}incr ::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))"
+                    bufferOut "[string repeat " " 4]${indent}set ::microTemplateParser::object(loop.count) \$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))"
                 }
                 continue
             } elseif { [regexp "(^ *)$function_pattern_with_index" $line --> indent function iter operator limiter] } {
@@ -166,16 +183,30 @@ namespace eval ::microTemplateParser {
                 [apply { { line out_var } {
                     upvar $out_var out
                     set out ""
-                    if { [regexp "{% *(else) *%}" $line --> object] } {
-                        set out "\} else \{"
+                    if { [regexp "(^ *){% *(else) *%}" $line --> indent object] } {
+                        set out "${indent}\} else \{"
                         return 1
                     }
                     return 0
                 }} $line else_block]
             } {
+                set indent "[string repeat " " [string length $lappendCmd]]"
                 bufferOut "${indent}$else_block"
                 continue
             }
+
+            if { [regexp "(^ *){% *continue *%}" $line --> indent] } {
+                set indent "${indent}[string repeat " " [string length $lappendCmd]][string repeat " " 4]"
+                bufferOut "${indent}continue"
+                continue
+            }
+
+            if { [regexp "(^ *){% *break *%}" $line --> indent] } {
+                set indent "${indent}[string repeat " " [string length $lappendCmd]][string repeat " " 4]"
+                bufferOut "${indent}break"
+                continue
+            }
+
             if { [regexp "(^ *)$function_end_pattern" $line --> indent function_close] } {
                 set function [lindex $call_stack end]
                 set call_stack [lrange $call_stack 0 end-1]
@@ -183,6 +214,7 @@ namespace eval ::microTemplateParser {
                 bufferOut " ${indent}\}"
                 if { $function in $loop_enabled } {
                     bufferOut "${indent}set ::microTemplateParser::loop(last_loop) \[incr ::microTemplateParser::loop_cnt -1\]"
+                    bufferOut "${indent}set ::microTemplateParser::object(loop.count) \$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))"
                 }
                 continue
             }
@@ -212,7 +244,10 @@ namespace eval ::microTemplateParser {
         set fh [open $template r]
         set output [parser $fh]
         close $fh
-        if { $debug } { puts $output }
+        if { $debug } {
+            puts $output
+            codeGenerator $output
+        }
         eval $output
         # if { $debug } { puts $errMsg; return }
         unset object
@@ -239,7 +274,11 @@ if { $argv0 == [info script] } {
                 <td>
                     <table border="1">
                     {% for item_list in rows %}
-                        <tr>
+                        {% if loop.count == '2' %}
+                        <tr color="grey">
+                        {% else %}
+                        <tr color="white">
+                        {% endif %}
                             <td>{{ loop.count }}</td>
                             {% if item_list.0 == 'hello' %}
                             <td>Main:Special text </td>
@@ -249,7 +288,7 @@ if { $argv0 == [info script] } {
                             <td>Main:{{ item_list.1 }}</td>
                             <td>Main Full:'{{ item_list.0 }}:{{ item_list.1 }}'</td>
                             {% if legacy_order_no > '100' %}
-                                {% for j in 'unit_test1 unit_test2' %}
+                                {% for j in item_list %}
                                 <td>{{ loop.count }}</td>
                                 <td>Inner:{{ j }}</td>
                                 {% endfor %}
@@ -272,8 +311,8 @@ if { $argv0 == [info script] } {
     puts $fh $example
     close $fh
      
-    # set ::microTemplateParser::debug 1
-    set html [::microTemplateParser::renderHtml "/tmp/template.htm" {
+    set ::microTemplateParser::debug 1
+    puts [::microTemplateParser::renderHtml "/tmp/template.htm" {
         item_nos        "[list 10 20 30]"
 
         legacy_order_no {1000}
@@ -294,5 +333,4 @@ if { $argv0 == [info script] } {
     }]
 
     # parray ::microTemplateParser::object
-    puts "$html"
 }
