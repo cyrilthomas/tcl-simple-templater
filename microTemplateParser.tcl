@@ -29,7 +29,7 @@ namespace eval ::microTemplateParser {
     unset _op key val v
 
     set additional_attributes       "loop.count"
-    set function_pattern            "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+|'.*') *%}"
+    set function_pattern            "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+|\\w+\.\\d+|[join $additional_attributes |]|'.*') *%}"
     set function_pattern_with_index "{% *([join $functions_with_index |]) +(\\w+\.?\\d*|[join $additional_attributes |]) +([join $operators |]) +(\\w+\.?\\d*|[join $additional_attributes |]|'.*') *%}"
     set function_end_pattern        "{% *end([join $functions |]) *%}"
 
@@ -54,6 +54,8 @@ namespace eval ::microTemplateParser {
         if { $operator ni $function_operators($function) } { error "Unsupported operator '$operator' used!" }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
             return "foreach ::microTemplateParser::object($iter) \[list $new_limiter\] \{"    
+        } elseif { [regexp "(\\w+)\.(\\d+)" $limiter --> limiter limiter_index] } {
+            return "foreach ::microTemplateParser::object($iter) \[lindex \$::microTemplateParser::object($limiter) $limiter_index\] \{"
         } else {
             return "foreach ::microTemplateParser::object($iter) \$::microTemplateParser::object($limiter) \{"
         }
@@ -98,7 +100,6 @@ namespace eval ::microTemplateParser {
             foreach { limiter limiter_index } [split $limiter] break
             if { $limiter_index == "" } { set limiter_index 0 }
             set limiter "\[lindex \$::microTemplateParser::object($limiter) $limiter_index\]"
-            return "if \{ \$::microTemplateParser::object($iter) $operator \$::microTemplateParser::object($limiter) \} \{"
         }
         return "if \{ $iter $operator $limiter \} \{"
     }

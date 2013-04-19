@@ -6,12 +6,15 @@ source microTemplateParser.tcl
 set data {
         item_nos        "[list 10 20 30]"
 
+        compare        "[list 10 10]"
+
         legacy_order_no {1000}
 
         rows            {
-                            {hello world}
-                            {good bye}
-                            {dance party}
+                            { 0 hello world }
+                            { 1 good bye }
+                            { 0 sample value }
+                            { 1 blue sky }
                         }
 
         sample          "[list \
@@ -29,7 +32,7 @@ proc execExample { html } {
     puts $fh $html
     close $fh
 
-    set ::microTemplateParser::debug 1
+    # set ::microTemplateParser::debug 1
     puts "Template:\n$html\nRendered:\n[::microTemplateParser::renderHtml $tmpl_file $::data]"
     file delete $tmpl_file
 }
@@ -47,8 +50,8 @@ set example {
         <p><b>no it is not dance</b></p>
         {% endif %}
 
-    </body>        
-</html>        
+    </body>
+</html>
 }
 
 execExample $example
@@ -57,27 +60,61 @@ set example {
 <html>
     <body>  
         <table border="1">
-            
             {% for item_list in rows %}
                 <td>{{ loop.count }}</td>
                 {% if item_list.0 == 'hello' %}
-                    {% continue %}
+                    <td>Main:Hello Modified - [Sample Text] </td>
                 {% else %}
                     <td>Main:{{ item_list.0 }} [Sample Text] </td>
                 {% endif %}
                 <td>Main:{{ item_list.1 }}</td>
-                <td>Main Full:'{{ item_list.0 }}:{{ item_list.1 }}'</td>                
-                {% if legacy_order_no > '100' %}                
+                <td>Main Full:'{{ item_list.0 }}:{{ item_list.1 }}'</td>
+                {% if legacy_order_no > '100' %}
                     {% for j in item_list %}
                         <td>{{ loop.count }}</td>
                         <td>Inner:{{ j }}</td>
                     {% endfor %}
                 {% endif %}
                 <td>Last</td>
-                <td>Current loop#{{ loop.count }}</td>            
+                <td>Current loop#{{ loop.count }}</td>
                 </tr>
             {% endfor %}
-        </table>               
+        </table>
+    </body>
+</html>
+}
+
+execExample $example
+
+
+set example {
+<html>
+    <body>
+        <table border="1">
+            {% for item_list in rows %}
+                {% if item_list.0 == 'hello' %}
+                    {% continue %}
+                {% endif %}
+                <td>{{ loop.count }}</td>
+            {% endfor %}
+        </table>
+    </body>
+</html>
+}
+
+execExample $example
+
+set example {
+<html>
+    <body>
+        <table border="1">
+            {% for item_list in rows %}
+                {% if item_list.0 == 'hello' %}
+                    {% break %}
+                {% endif %}
+                <td>{{ loop.count }}</td>
+            {% endfor %}
+        </table>
     </body>
 </html>
 }
@@ -95,8 +132,42 @@ set example {
 {% for run in '0 1 2 3' %}
     {% if loop.count == '2' %}
     {% endif %}
-    <p>{{ loop.count }}</p>    
+    <p>{{ loop.count }}</p>
 {% endfor %}
+</html>
+}
+
+execExample $example
+
+
+set example {
+<html>
+{% if compare.0 == compare.1 %}
+<p>they are equal</p>
+{% endif %}
+</html>
+}
+
+execExample $example
+
+
+set example {
+<html>
+{% for a in rows.0 %}
+<p>row:{{a}}</p>
+{% endfor %}
+{% for b in loop.count %}
+{% endfor %}
+<p>{{b}}</p>
+
+{% for row in rows %}
+    {% if row.0 == '1' %}
+        <p><b>row:{{row}}</b></p>
+    {% else %}
+        <p>row:{{row}}</p>
+    {% endif %}
+{% endfor %}
+
 </html>
 }
 
