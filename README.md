@@ -9,7 +9,9 @@ Basically converts a HTML template like this
     <body>
         <p style="bold">{{ item_no }}</p>
         {% if item_no == 'dance' %}
-        <p><b>yes it is dance</b></p>
+            <p><b>yes it is dance</b></p>
+        {% else %}
+            <p><b>yes it is not dance!</b></p>
         {% endif %}
         <table>
             <tr>
