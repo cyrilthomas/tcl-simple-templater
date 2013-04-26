@@ -9,9 +9,10 @@ Basically converts a HTML template like this
     <body>
         <p style="bold">{{ item_no }}</p>
         {% if item_no == 'dance' %}
-        <p><b>yes it is dance</b></p>
+            <p><b>yes it is dance</b></p>
+        {% else %}
+            <p><b>yes it is not dance!</b></p>
         {% endif %}
-        <p>{{ legacy_order_no }}</p>
         <table>
             <tr>
                 <td>
@@ -21,12 +22,10 @@ Basically converts a HTML template like this
                             <td>{{ loop.count }}</td>
                             <td>Main:{{ item_list.0 }} [Sample Text] </td>
                             <td>Main:{{ item_list.1 }}</td>
-                            {% if legacy_order_no > '100' %}
-                                {% for j in 'unit_test1 unit_test2' %}
+                            {% for j in 'unit_test1 unit_test2' %}
                                 <td>{{ loop.count }}</td>
                                 <td>Inner:{{ j }}</td>
-                                {% endfor %}
-                            {% endif %}
+                            {% endfor %}
                             <td>Last</td>
                             <td>{{ loop.count }}</td>
                             <td>$test [info hostname]</td>
@@ -36,6 +35,16 @@ Basically converts a HTML template like this
                 </td>
             </tr>
         </table>
+        <table border="1">
+            {% for addr in address_book %}
+                <tr><td colspan="2"><h4>{{ loop.count }}. {{ addr.name }}</h4></td></tr>
+                <tr><td>Firstname</td><td>{{ addr.name.0 }}</td></tr>
+                <tr><td>Lastname</td><td>{{ addr.name.1 }}</td></tr>
+                <tr><td>Place</td><td>{{ addr.place }}</td></tr>
+                <tr><td>Phone</td><td>{{ addr.phone }}</td></tr>
+                <tr/>
+            {% endfor %}
+        </table>
     </body>
 </html>
 ```
@@ -43,8 +52,6 @@ When provided the necessary parameters as
 ```
 ::microTemplateParser::renderHtml "/tmp/template.htm" {
         item_nos        "[list 10 20 30]"
-
-        legacy_order_no {1000}
 
         rows            {
                             {hello world}
@@ -59,6 +66,20 @@ When provided the necessary parameters as
                             [list test14 test15] \
                         ]"
         item_no         {dance}
+        
+        address_book    {
+                            {
+                                name {John Doe}
+                                place {USA}
+                                phone {001}
+                            }
+                            
+                            {
+                                name {David Beck}
+                                place {England}
+                                phone {002}
+                            }
+                        }
 }
 ```    
 Into this
@@ -67,7 +88,6 @@ Into this
     <body>
         <p style="bold">dance</p>
         <p><b>yes it is dance</b></p>
-        <p>1000</p>
         <table>
             <tr>
                 <td>
@@ -111,6 +131,20 @@ Into this
                     </table>
                 </td>
             </tr>
+        </table>
+        <table border="1">
+                <tr><td colspan="2"><h4>1. John Doe</h4></td></tr>
+                <tr><td>Firstname</td><td>John</td></tr>
+                <tr><td>Lastname</td><td>Doe</td></tr>
+                <tr><td>Place</td><td>USA</td></tr>
+                <tr><td>Phone</td><td>001</td></tr>
+                <tr/>
+                <tr><td colspan="2"><h4>2. David Beck</h4></td></tr>
+                <tr><td>Firstname</td><td>David</td></tr>
+                <tr><td>Lastname</td><td>Beck</td></tr>
+                <tr><td>Place</td><td>England</td></tr>
+                <tr><td>Phone</td><td>002</td></tr>
+                <tr/>
         </table>
     </body>
 </html>
