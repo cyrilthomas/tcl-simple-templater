@@ -11,7 +11,6 @@ Basically converts a HTML template like this
         {% if item_no == 'dance' %}
         <p><b>yes it is dance</b></p>
         {% endif %}
-        <p>{{ legacy_order_no }}</p>
         <table>
             <tr>
                 <td>
@@ -21,12 +20,10 @@ Basically converts a HTML template like this
                             <td>{{ loop.count }}</td>
                             <td>Main:{{ item_list.0 }} [Sample Text] </td>
                             <td>Main:{{ item_list.1 }}</td>
-                            {% if legacy_order_no > '100' %}
-                                {% for j in 'unit_test1 unit_test2' %}
+                            {% for j in 'unit_test1 unit_test2' %}
                                 <td>{{ loop.count }}</td>
                                 <td>Inner:{{ j }}</td>
-                                {% endfor %}
-                            {% endif %}
+                            {% endfor %}
                             <td>Last</td>
                             <td>{{ loop.count }}</td>
                             <td>$test [info hostname]</td>
@@ -53,8 +50,6 @@ When provided the necessary parameters as
 ```
 ::microTemplateParser::renderHtml "/tmp/template.htm" {
         item_nos        "[list 10 20 30]"
-
-        legacy_order_no {1000}
 
         rows            {
                             {hello world}
@@ -91,7 +86,6 @@ Into this
     <body>
         <p style="bold">dance</p>
         <p><b>yes it is dance</b></p>
-        <p>1000</p>
         <table>
             <tr>
                 <td>
