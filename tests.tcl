@@ -11,10 +11,10 @@ set data {
         legacy_order_no {1000}
 
         rows            {
-                            { 0 hello world }
-                            { 1 good bye }
-                            { 0 sample value }
-                            { 1 blue sky }
+                            { hello world }
+                            { good bye }
+                            { sample value }
+                            { blue sky }
                         }
 
         sample          "[list \
@@ -32,7 +32,7 @@ proc execExample { html } {
     puts $fh $html
     close $fh
 
-    # set ::microTemplateParser::debug 1
+    set ::microTemplateParser::debug 1
     puts "Template:\n$html\nRendered:\n[::microTemplateParser::renderHtml $tmpl_file $::data]"
     file delete $tmpl_file
 }
