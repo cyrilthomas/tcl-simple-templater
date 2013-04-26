@@ -45,7 +45,6 @@ namespace eval ::microTemplateParser {
     }
 
     proc processObject { object } {
-        puts "Got $object"
         lappend objSplit {*}[split $object "."]
         set mainObj [lindex $objSplit 0]
         set rest [lrange $objSplit 1 end]
@@ -61,10 +60,8 @@ namespace eval ::microTemplateParser {
                 }
             }
         }
-        puts "Out $newObj"
         return $newObj
     }
-
 
     proc processFunc_for { params } {
         variable function_operators
@@ -101,28 +98,6 @@ namespace eval ::microTemplateParser {
     }
 
     proc processLine { line } {
-        variable debug
-        variable loop
-
-        regsub -all {([][$\\])} $line {\\\1} line ;# disable command executions
-        # regsub -all "{{ *loop.count *}}" $line "\$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))" line
-        regsub -all "{{ *loop.count *}}" $line "\$::microTemplateParser::object(loop.count)" line
-        
-        # These needs to be replace similar to the processObject logic
-        if { [regexp "{{ *(\\w+) *}}" $line --> object] } {
-            if { $debug } { puts "token : $object" }
-            regsub -all "{{ *(\\w+\[\.\\d+|\\w+\]*) *}}" $line "\$::microTemplateParser::object(\\1)" line
-        }
-
-        if { [regexp "{{ *(\\w+)\.(\\d+) *}}" $line --> object index] } {
-            if { $debug } { puts "token: $object index: $index" }
-            regsub -all "{{ *(\\w+)\.(\\d+) *}}" $line "\[lindex \$::microTemplateParser::object(\\1) \\2\]" line
-        }
-
-        return [dquoteEscape $line]
-    }
-
-    proc processLineNew { line } {
         variable debug
         variable loop
 
@@ -273,7 +248,7 @@ namespace eval ::microTemplateParser {
                 continue
             }
 
-            bufferOut "$lappendCmd \"[processLineNew $line]\""
+            bufferOut "$lappendCmd \"[processLine $line]\""
         }
 
         return [join $BufferOut \n]
@@ -303,7 +278,6 @@ namespace eval ::microTemplateParser {
             codeGenerator $output
         }
         eval $output
-        # if { $debug } { puts $errMsg; return }
         unset object
         return [join $html \n]
     }
