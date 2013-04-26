@@ -36,6 +36,16 @@ Basically converts a HTML template like this
                 </td>
             </tr>
         </table>
+        <table border="1">
+            {% for addr in address_book %}
+                <tr><td colspan="2"><h4>{{ loop.count }}. {{ addr.name }}</h4></td></tr>
+                <tr><td>Firstname</td><td>{{ addr.name.0 }}</td></tr>
+                <tr><td>Lastname</td><td>{{ addr.name.1 }}</td></tr>
+                <tr><td>Place</td><td>{{ addr.place }}</td></tr>
+                <tr><td>Phone</td><td>{{ addr.phone }}</td></tr>
+                <tr/>
+            {% endfor %}
+        </table>
     </body>
 </html>
 ```
@@ -59,6 +69,20 @@ When provided the necessary parameters as
                             [list test14 test15] \
                         ]"
         item_no         {dance}
+        
+        address_book    {
+                            {
+                                name {John Doe}
+                                place {USA}
+                                phone {001}
+                            }
+                            
+                            {
+                                name {David Beck}
+                                place {England}
+                                phone {002}
+                            }
+                        }
 }
 ```    
 Into this
@@ -111,6 +135,20 @@ Into this
                     </table>
                 </td>
             </tr>
+        </table>
+        <table border="1">
+                <tr><td colspan="2"><h4>1. John Doe</h4></td></tr>
+                <tr><td>Firstname</td><td>John</td></tr>
+                <tr><td>Lastname</td><td>Doe</td></tr>
+                <tr><td>Place</td><td>USA</td></tr>
+                <tr><td>Phone</td><td>001</td></tr>
+                <tr/>
+                <tr><td colspan="2"><h4>2. David Beck</h4></td></tr>
+                <tr><td>Firstname</td><td>David</td></tr>
+                <tr><td>Lastname</td><td>Beck</td></tr>
+                <tr><td>Place</td><td>England</td></tr>
+                <tr><td>Phone</td><td>002</td></tr>
+                <tr/>
         </table>
     </body>
 </html>
