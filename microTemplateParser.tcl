@@ -70,6 +70,7 @@ namespace eval ::microTemplateParser {
         set operator    [lindex $params 2]
         set limiter     [lindex $params 3]
 
+        regsub -all {([][$\\])} $limiter {\\\1} limiter ;# disable command executions
         if { $operator ni $function_operators($function) } { error "Unsupported operator '$operator' used!" }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
             return "foreach ::microTemplateParser::object($iter) \[list $new_limiter\] \{"    
@@ -85,6 +86,7 @@ namespace eval ::microTemplateParser {
         set operator    [lindex $params 2]
         set limiter     [lindex $params 3]
 
+        regsub -all {([][$\\])} $limiter {\\\1} limiter ;# disable command executions
         if { $operator ni $function_operators($function) } { error "Unsupported operator '$operator' used!" }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
             return "if \{ [processObject $iter] $operator \[list $new_limiter\] \} \{"
