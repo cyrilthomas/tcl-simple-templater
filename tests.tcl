@@ -24,6 +24,19 @@ set data {
                             [list test14 test15] \
                         ]"
         item_no         {dance}
+
+        address_book    {
+                            {
+                                name {John Doe}
+                                place {USA}
+                                phone {001}
+                            }
+                            {
+                                name {David Beck}
+                                place {England}
+                                phone {002}
+                            }
+                        }
 }
 
 proc execExample { html } {
@@ -168,6 +181,30 @@ set example {
     {% endif %}
 {% endfor %}
 
+</html>
+}
+
+execExample $example
+
+set example {
+<html>
+    <header>
+        <script type="text/javascript">
+            alert('Welcome');
+        </script>
+    </header>
+    <body>
+        <table border="1">
+            {% for addr in address_book %}
+                <tr><td colspan="2"><h4>{{ loop.count }}. {{ addr.name }}</h4></td></tr>
+                <tr><td>Firstname</td><td>{{ addr.name.0 }}</td></tr>
+                <tr><td>Lastname</td><td>{{ addr.name.1 }}</td></tr>
+                <tr><td>Place</td><td>{{ addr.place }}</td></tr>
+                <tr><td>Phone</td><td>{{ addr.phone }}</td></tr>
+                <tr/>
+            {% endfor %}
+        </table>
+    </body>
 </html>
 }
 
