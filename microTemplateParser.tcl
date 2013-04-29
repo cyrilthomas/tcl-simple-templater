@@ -39,6 +39,13 @@ namespace eval ::microTemplateParser {
         return [regsub -all {"} $str {\"}]
     }
 
+    proc error2Html { str } {
+        regsub -all {(\{|\}|\")} $str {\\\1} str
+        regsub -all {\n} $str {<br/>} str
+        regsub -all { } $str {\&nbsp;} str
+        return $str
+    }
+
     proc bufferOut { msg } {
         variable BufferOut
         lappend BufferOut $msg
