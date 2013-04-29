@@ -29,8 +29,8 @@ namespace eval ::microTemplateParser {
     unset _op key val v
 
     set additional_attributes       "loop.count"
-    set function_pattern            "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+(?:\.\\d+|\\w+)*|[join $additional_attributes |]|'.*') *%}"
-    set function_pattern_with_index "{% *([join $functions_with_index |]) +(\\w+\[\.\\d+|\\w+\]*|[join $additional_attributes |]) +([join $operators |]) +(\\w+(?:\.\\d+|\\w+)*|[join $additional_attributes |]|'.*') *%}"
+    set function_pattern            "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additional_attributes |]|'.*') *%}"
+    set function_pattern_with_index "{% *([join $functions_with_index |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additional_attributes |]|'.*') +([join $operators |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additional_attributes |]|'.*') *%}"
     set function_end_pattern        "{% *end([join $functions |]) *%}"
 
     set lappendCmd                  "lappend ::microTemplateParser::html"
