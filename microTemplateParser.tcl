@@ -111,13 +111,11 @@ namespace eval ::microTemplateParser {
         variable loop
 
         regsub -all {([][$\\])} $line {\\\1} line ;# disable command executions
-        # regsub -all "{{ *loop.count *}}" $line "\$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))" line
 
         set pos 0
         set char_list [split $line {}]
         set max_pos [llength $char_list]
         if { !$max_pos } { set max_pos -1 }
-        # puts "Max : $max_pos"
         set save ""
         set start 0
         set object ""
@@ -129,9 +127,6 @@ namespace eval ::microTemplateParser {
             if { $double_char == "\{\{" } {
                 set last_open [llength $save]
                 lappend save [lindex $char_list $pos]
-                # lappend save [lindex $char_list [expr $pos + 1]] ;# prev
-                # puts "last open :$last_open"
-                # incr pos 2    ;# prev
                 incr pos
                 set start 1
                 set object ""
@@ -142,9 +137,6 @@ namespace eval ::microTemplateParser {
                     set init 0
                 }
                 if { $double_char == "\}\}" } {
-                    # puts "Got object: [join $object ""]"
-                    # puts "save : $save"
-                    # puts "save : lrange $save 0 [expr $last_open - 1] [lrange $save 0 [expr $last_open - 1]] "
                     lappend str [join [lrange $save 0 [expr $last_open - 1]] ""] [processObject [string trim [join $object ""]]]
                     set save ""
                     set object ""
