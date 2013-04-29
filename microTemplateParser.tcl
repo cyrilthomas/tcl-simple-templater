@@ -41,6 +41,7 @@ namespace eval ::microTemplateParser {
 
     proc error2Html { str } {
         regsub -all {(\{|\}|\")} $str {\\\1} str
+        regsub -all {\r\n} $str {<br/>} str
         regsub -all {\n} $str {<br/>} str
         regsub -all { } $str {\&nbsp;} str
         return $str
@@ -165,7 +166,8 @@ namespace eval ::microTemplateParser {
         close $fh
     }
 
-    proc parser { template_handle } {
+    proc parser { template_var } {
+        upvar $template_var template
         variable object
         variable debug
         variable BufferOut
@@ -180,8 +182,7 @@ namespace eval ::microTemplateParser {
 
         set call_stack ""
 
-        while { ![eof $template_handle] } {
-            set line [gets $template_handle]
+        foreach line $template {
 
             if { [regexp "(^ *)$function_pattern" $line --> indent function iter operator limiter] } {
                 if { $debug } { puts "function:$function iter:$iter operator:$operator limiter:$limiter" }
@@ -272,8 +273,13 @@ namespace eval ::microTemplateParser {
         array set object [uplevel subst "{$obj}"]
 
         set fh [open $template r]
-        set output [parser $fh]
+        set template ""
+        while { ![eof $fh] } {
+            lappend template [gets $fh]
+        }
         close $fh
+        set output [parser template]
+
         if { $debug } {
             puts $output
             codeGenerator $output
