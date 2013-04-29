@@ -36,6 +36,11 @@ Basically converts a HTML template like this
                 </td>
             </tr>
         </table>
+        <select id="search_lang" name="language">
+            {% for language in languages %}
+            <option value="{{ language.lang }}" lang="{{ language.lang }}">{{ language.desc }}</option>
+            {% endfor %}
+        </select>
     </body>
 </html>
 ```
@@ -59,6 +64,18 @@ When provided the necessary parameters as
                             [list test14 test15] \
                         ]"
         item_no         {dance}
+        
+        languages       {
+                            {
+                                lang "en"
+                                desc "English"
+                            }
+                            
+                            {
+                                lang "es"
+                                desc "Spanish"
+                            }
+                        }
 }
 ```    
 Into this
@@ -112,6 +129,12 @@ Into this
                 </td>
             </tr>
         </table>
+        <select id="search_lang" name="language">
+            <option value="en" lang="en">English</option>
+            <option value="es" lang="es">Spanish</option>
+            <option value="fr" lang="fr">French</option>
+            <option value="de" lang="de">German</option>
+        </select>
     </body>
 </html>
 ```
