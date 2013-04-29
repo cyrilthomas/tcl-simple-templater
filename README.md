@@ -131,9 +131,7 @@ Into this
         </table>
         <select id="search_lang" name="language">
             <option value="en" lang="en">English</option>
-            <option value="es" lang="es">Spanish</option>
-            <option value="fr" lang="fr">French</option>
-            <option value="de" lang="de">German</option>
+            <option value="es" lang="es">Spanish</option>        
         </select>
     </body>
 </html>
