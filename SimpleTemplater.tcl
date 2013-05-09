@@ -1,8 +1,8 @@
 #!/usr/bin/tclsh
 
-# TCL micro template parser
+# A Simple Template Parser
 
-namespace eval ::microTemplateParser {
+namespace eval ::SimpleTemplater {
 
     set debug 0
     set functions {
@@ -33,7 +33,7 @@ namespace eval ::microTemplateParser {
     set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') +([join $operators |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') *%}"
     set functionEndPattern          "{% *end([join $functions |]) *%}"
 
-    set lappendCmd                  "lappend ::microTemplateParser::html"
+    set lappendCmd                  "lappend ::SimpleTemplater::html"
 
     proc dquoteEscape { str } {
         return [regsub -all {"} $str {\"}]
@@ -58,9 +58,9 @@ namespace eval ::microTemplateParser {
         set mainObj [lindex $objSplit 0]
         set rest [lrange $objSplit 1 end]
         if { $mainObj == "loop" && $rest == "count" } {
-            set newObj "\$::microTemplateParser::object(loop.count)"
+            set newObj "\$::SimpleTemplater::object(loop.count)"
         } else {
-            set newObj "\$::microTemplateParser::object($mainObj)"
+            set newObj "\$::SimpleTemplater::object($mainObj)"
             foreach index $rest {
                 if { [regexp "\\d+" $index] } {
                     set newObj "\[lindex $newObj $index\]"
@@ -83,9 +83,9 @@ namespace eval ::microTemplateParser {
         regsub -all {([][$\\])} $limiter {\\\1} limiter ;# disable command executions
         if { $operator ni $functionOperators($function) } { error "Unsupported operator '$operator' used!" }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
-            return "foreach ::microTemplateParser::object($iter) \[list $new_limiter\] \{"    
+            return "foreach ::SimpleTemplater::object($iter) \[list $new_limiter\] \{"
         } else {
-            return "foreach ::microTemplateParser::object($iter) [processObject $limiter] \{"
+            return "foreach ::SimpleTemplater::object($iter) [processObject $limiter] \{"
         }
     }
 
@@ -163,8 +163,8 @@ namespace eval ::microTemplateParser {
     proc codeGenerator { code } {
         set fh [open generated_code.tcl w]
         puts $fh "#!/usr/bin/tclsh"
-        puts $fh "namespace eval ::microTemplateParser {}"
-        puts $fh "array set ::microTemplateParser::object {\n    [array get ::microTemplateParser::object]\n}\n"
+        puts $fh "namespace eval ::SimpleTemplater {}"
+        puts $fh "array set ::SimpleTemplater::object {\n    [array get ::SimpleTemplater::object]\n}\n"
         puts $fh "$code"
         close $fh
     }
@@ -193,16 +193,16 @@ namespace eval ::microTemplateParser {
                 lappend call_stack $function
                 set params [list $function $iter $operator $limiter]
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
-                
+
                 if { $function in $loop_enabled } {
-                    bufferOut "${indent}set ::microTemplateParser::loop(last_loop) \[incr ::microTemplateParser::loopCnt\]"
-                    bufferOut "${indent}set ::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop)) 0"
-                    bufferOut "${indent}set ::microTemplateParser::object(loop.count) \$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))"
+                    bufferOut "${indent}set ::SimpleTemplater::loop(last_loop) \[incr ::SimpleTemplater::loopCnt\]"
+                    bufferOut "${indent}set ::SimpleTemplater::loop(\$::SimpleTemplater::loop(last_loop)) 0"
+                    bufferOut "${indent}set ::SimpleTemplater::object(loop.count) \$::SimpleTemplater::loop(\$::SimpleTemplater::loop(last_loop))"
                 }
                 bufferOut "${indent}[processFunc_${function} $params]"
                 if { $function in $loop_enabled } {
-                    bufferOut "[string repeat " " 4]${indent}incr ::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))"
-                    bufferOut "[string repeat " " 4]${indent}set ::microTemplateParser::object(loop.count) \$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))"
+                    bufferOut "[string repeat " " 4]${indent}incr ::SimpleTemplater::loop(\$::SimpleTemplater::loop(last_loop))"
+                    bufferOut "[string repeat " " 4]${indent}set ::SimpleTemplater::object(loop.count) \$::SimpleTemplater::loop(\$::SimpleTemplater::loop(last_loop))"
                 }
                 continue
             } elseif { [regexp "(^ *)$functionPatternWithIndex" $line --> indent function iter operator limiter] } {
@@ -248,8 +248,8 @@ namespace eval ::microTemplateParser {
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
                 bufferOut " ${indent}\}"
                 if { $function in $loop_enabled } {
-                    bufferOut "${indent}set ::microTemplateParser::loop(last_loop) \[incr ::microTemplateParser::loopCnt -1\]"
-                    bufferOut "${indent}set ::microTemplateParser::object(loop.count) \$::microTemplateParser::loop(\$::microTemplateParser::loop(last_loop))"
+                    bufferOut "${indent}set ::SimpleTemplater::loop(last_loop) \[incr ::SimpleTemplater::loopCnt -1\]"
+                    bufferOut "${indent}set ::SimpleTemplater::object(loop.count) \$::SimpleTemplater::loop(\$::SimpleTemplater::loop(last_loop))"
                 }
                 continue
             }

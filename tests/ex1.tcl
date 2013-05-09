@@ -1,10 +1,10 @@
 #!/usr/bin/tclsh
 
 lappend auto_path .
-source microTemplateParser.tcl
+source SimpleTemplater.tcl
 
 
-# set ::microTemplateParser::debug 1
+# set ::SimpleTemplater::debug 1
 set begin [clock milliseconds]
 if { [catch {
 
@@ -20,7 +20,7 @@ if { [catch {
         }
         # puts $languages
 
-        set html [::microTemplateParser::renderHtml ex1.tpl {
+        set html [::SimpleTemplater::renderHtml ex1.tpl {
             states {
                 {
                     name    "Alabama"
@@ -63,9 +63,9 @@ if { [catch {
     } errMsg ]
 } {
     # To be caught at the highest level
-    set html [::microTemplateParser::renderHtml "error.tpl" {
-        error "[::microTemplateParser::error2Html $errMsg]"
-        info "[::microTemplateParser::error2Html $::errorInfo]"
+    set html [::SimpleTemplater::renderHtml "error.tpl" {
+        error "[::SimpleTemplater::error2Html $errMsg]"
+        info "[::SimpleTemplater::error2Html $::errorInfo]"
     }]
 }
 

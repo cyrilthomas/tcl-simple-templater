@@ -1,12 +1,12 @@
 #!/usr/bin/tclsh
 
 lappend auto_path .
-source microTemplateParser.tcl
+source SimpleTemplater.tcl
 
-set ::microTemplateParser::debug 0
+set ::SimpleTemplater::debug 0
 set begin [clock milliseconds]
 
-puts [::microTemplateParser::renderHtml ex2.tpl {
+puts [::SimpleTemplater::renderHtml ex2.tpl {
     address_book {
         {
             name {John Doe}

@@ -1,7 +1,7 @@
 #!/usr/bin/tclsh
 
 lappend auto_path .
-source microTemplateParser.tcl
+source SimpleTemplater.tcl
 
 set data {
         item_nos        "[list 10 20 30]"
@@ -45,8 +45,8 @@ proc execExample { html } {
     puts $fh $html
     close $fh
 
-    set ::microTemplateParser::debug 1
-    puts "Template:\n$html\nRendered:\n[::microTemplateParser::renderHtml $tmpl_file $::data]"
+    set ::SimpleTemplater::debug 1
+    puts "Template:\n$html\nRendered:\n[::SimpleTemplater::renderHtml $tmpl_file $::data]"
     file delete $tmpl_file
 }
 
