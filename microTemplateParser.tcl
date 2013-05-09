@@ -270,7 +270,7 @@ namespace eval ::microTemplateParser {
         set loop(last_loop) 0
         set loop(0) 0
         set loop_cnt 0
-        array set object [uplevel subst "{$obj}"]
+        array set object [uplevel subst [list $obj]]
 
         set fh [open $template r]
         set template ""
