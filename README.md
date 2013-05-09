@@ -1,7 +1,7 @@
-microTemplateParser
+SimpleTemplater
 ===================
 
-A micro html template parser for TCL (inspired from Python Django)
+A simple html template parser for TCL (inspired from Python Django)
 
 Basically converts a HTML template like this
 ```
@@ -46,7 +46,7 @@ Basically converts a HTML template like this
 ```
 When provided the necessary parameters as
 ```
-::microTemplateParser::renderHtml "/tmp/template.htm" {
+::SimpleTemplater::renderHtml "/tmp/template.htm" {
         item_nos        "[list 10 20 30]"
 
         no              {1000}
