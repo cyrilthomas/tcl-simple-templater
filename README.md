@@ -7,7 +7,7 @@ Basically converts a HTML template like this
 ```
 <html>
     <body>
-        <p style="bold">{{ item_no }}</p>
+        <p style="font-weight: bold">{{ item_no }}</p>
         {% if item_no == 'dance' %}
         <p><b>yes it is dance</b></p>
         {% endif %}
@@ -82,7 +82,7 @@ Into this
 ```
 <html>
     <body>
-        <p style="bold">dance</p>
+        <p style="font-weight: bold">dance</p>
         <p><b>yes it is dance</b></p>
         <p>1000</p>
         <table>
