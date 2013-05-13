@@ -62,9 +62,9 @@ namespace eval ::SimpleTemplater {
         } else {
             set newObj "\$::SimpleTemplater::object($mainObj)"
             foreach index $rest {
-                if { [regexp "\\d+" $index] } {
+                if { [regexp "^\\d+$" $index] } {
                     set newObj "\[lindex $newObj $index\]"
-                } elseif { [regexp "\\w+" $index]} {
+                } elseif { [regexp "^\\w+$" $index]} {
                     set newObj "\[dict get $newObj $index\]"
                 }
             }
