@@ -6,133 +6,109 @@ A simple html template parser for TCL (inspired from Python Django)
 Basically converts a HTML template like this
 ```
 <html>
+    <header>
+        <script type="text/javascript">
+            alert('Welcome');
+        </script>
+    </header>
     <body>
-        <p style="font-weight: bold">{{ item_no }}</p>
-        {% if item_no == 'dance' %}
-        <p><b>yes it is dance</b></p>
-        {% endif %}
-        <p>{{ no }}</p>
-        <table>
-            <tr>
-                <td>
-                    <table border="1">
-                    {% for item_list in rows %}
-                        <tr>
-                            <td>{{ loop.count }}</td>
-                            <td>Main:{{ item_list.0 }} [Sample Text] </td>
-                            <td>Main:{{ item_list.1 }}</td>
-                            {% if no > '100' %}
-                                {% for j in 'unit_test1 unit_test2' %}
-                                <td>{{ loop.count }}</td>
-                                <td>Inner:{{ j }}</td>
-                                {% endfor %}
-                            {% endif %}
-                            <td>Last</td>
-                            <td>{{ loop.count }}</td>
-                            <td>$test [info hostname]</td>
-                        </tr>
-                    {% endfor %}
-                    </table>
-                </td>
-            </tr>
-        </table>
-        <select id="search_lang" name="language">
-            {% for language in languages %}
-            <option value="{{ language.lang }}" lang="{{ language.lang }}">{{ language.desc }}</option>
+        <table border="1">
+            {% for addr in address_book %}
+                <tr><td colspan="2" style="text-align:center;"><h4><i>{{ loop.count }}# {{ addr.name }}</i></h4></td></tr>
+                <tr><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
+                <tr><td>Firstname</td><td>{{ addr.name.0 }}</td></tr>
+                <tr><td>Lastname</td><td>{{ addr.name.1 }}</td></tr>
+                <tr><td>Place</td><td>{{ addr.place }}</td></tr>
+                <tr><td>Phone</td><td>{{ addr.phone }}</td></tr>
+                {% if addr.personal != '' %}
+                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
+                    <tr><td>Phone</td><td>{{ addr.personal.phone }}</td></tr>
+                    <tr><td>Email</td><td>{{ addr.personal.email }}</td></tr>
+                {% else %}
+                    <!-- optional else block -->
+                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
+                {% endif %}
+                <tr/>
             {% endfor %}
-        </select>
+        </table>
     </body>
 </html>
 ```
 When provided the necessary parameters as
 ```
-::SimpleTemplater::renderHtml "/tmp/template.htm" {
-        item_nos        "[list 10 20 30]"
+:puts [::SimpleTemplater::renderHtml ex2.tpl {
+    address_book {
+        {
+            name {John Doe}
+            place {USA}
+            phone {001}
+            personal {
+                phone   "001-123-12345"
+                email   "john.doe@e-mail.com"
+            }
 
-        no              {1000}
+        }
 
-        rows            {
-                            {hello world}
-                            {good bye}
-                            {dance party}
-                        }
+        {
+            name {David Beck}
+            place {England}
+            phone {002}
+            personal {}
+        }
 
-        sample          "[list \
-                            [list test00 test01] \
-                            [list test10 test11] \
-                            [list test12 test13] \
-                            [list test14 test15] \
-                        ]"
-        item_no         {dance}
-
-        languages       {
-                            {
-                                lang "en"
-                                desc "English"
-                            }
-
-                            {
-                                lang "es"
-                                desc "Spanish"
-                            }
-                        }
-}
+        {
+            name "Sam Philip"
+            place {Australia}
+            phone {003}
+            personal "[list \
+                phone   "007-134-4567" \
+                email   "sam.philip@e-mail.com" \
+            ]"
+        }
+    }
+}]
 ```    
 Into this
 ```
+
 <html>
+    <header>
+        <script type="text/javascript">
+            alert('Welcome');
+        </script>
+    </header>
     <body>
-        <p style="font-weight: bold">dance</p>
-        <p><b>yes it is dance</b></p>
-        <p>1000</p>
-        <table>
-            <tr>
-                <td>
-                    <table border="1">
-                        <tr>
-                            <td>1</td>
-                            <td>Main:hello [Sample Text] </td>
-                            <td>Main:world</td>
-                                <td>1</td>
-                                <td>Inner:unit_test1</td>
-                                <td>2</td>
-                                <td>Inner:unit_test2</td>
-                            <td>Last</td>
-                            <td>1</td>
-                            <td>$test [info hostname]</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Main:good [Sample Text] </td>
-                            <td>Main:bye</td>
-                                <td>1</td>
-                                <td>Inner:unit_test1</td>
-                                <td>2</td>
-                                <td>Inner:unit_test2</td>
-                            <td>Last</td>
-                            <td>2</td>
-                            <td>$test [info hostname]</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Main:dance [Sample Text] </td>
-                            <td>Main:party</td>
-                                <td>1</td>
-                                <td>Inner:unit_test1</td>
-                                <td>2</td>
-                                <td>Inner:unit_test2</td>
-                            <td>Last</td>
-                            <td>3</td>
-                            <td>$test [info hostname]</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+        <table border="1">
+                <tr><td colspan="2" style="text-align:center;"><h4><i>1# John Doe</i></h4></td></tr>
+                <tr><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
+                <tr><td>Firstname</td><td>John</td></tr>
+                <tr><td>Lastname</td><td>Doe</td></tr>
+                <tr><td>Place</td><td>USA</td></tr>
+                <tr><td>Phone</td><td>001</td></tr>                
+                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
+                    <tr><td>Phone</td><td>001-123-12345</td></tr>
+                    <tr><td>Email</td><td>john.doe@e-mail.com</td></tr>
+                <tr/>
+                <tr><td colspan="2" style="text-align:center;"><h4><i>2# David Beck</i></h4></td></tr>
+                <tr><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
+                <tr><td>Firstname</td><td>David</td></tr>
+                <tr><td>Lastname</td><td>Beck</td></tr>
+                <tr><td>Place</td><td>England</td></tr>
+                <tr><td>Phone</td><td>002</td></tr>                
+                    <!-- optional else block -->
+                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
+                <tr/>
+                <tr><td colspan="2" style="text-align:center;"><h4><i>3# Sam Philip</i></h4></td></tr>
+                <tr><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
+                <tr><td>Firstname</td><td>Sam</td></tr>
+                <tr><td>Lastname</td><td>Philip</td></tr>
+                <tr><td>Place</td><td>Australia</td></tr>
+                <tr><td>Phone</td><td>003</td></tr>                
+                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
+                    <tr><td>Phone</td><td>007-134-4567</td></tr>
+                    <tr><td>Email</td><td>sam.philip@e-mail.com</td></tr>
+                <tr/>
         </table>
-        <select id="search_lang" name="language">
-            <option value="en" lang="en">English</option>
-            <option value="es" lang="es">Spanish</option>        
-        </select>
     </body>
 </html>
 ```
