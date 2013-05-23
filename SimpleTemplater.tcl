@@ -40,7 +40,7 @@ namespace eval ::SimpleTemplater {
     }
 
     proc error2Html { str } {
-        regsub -all {(\{|\}|\")} $str {\\\1} str
+        # regsub -all {(\{|\}|\")} $str {\\\1} str
         regsub -all {\r\n} $str {<br/>} str
         regsub -all {\n} $str {<br/>} str
         regsub -all { } $str {\&nbsp;} str
