@@ -47,13 +47,27 @@ namespace eval ::SimpleTemplater {
         return $str
     }
 
+    proc htmlEncode { str { tick 0 } } {
+        regsub -all {&} $str {\&amp;}       str
+        regsub -all {"} $str {\&quot;}      str
+        regsub -all {<} $str {\&lt;}        str
+        regsub -all {>} $str {\&gt;}        str
+
+        if { $tick } {
+            regsub -all {'} $str {\&#8217;}     str
+        } else {
+            regsub -all {'} $str {\&#39;}       str
+        }
+        return $str
+    }
+
     proc bufferOut { msg } {
         variable _bufferOut
 
         lappend _bufferOut $msg
     }
 
-    proc processObject { object } {
+    proc processObject { object { html_encode 0 } {tick 0 } } {
         lappend objSplit {*}[split $object "."]
         set mainObj [lindex $objSplit 0]
         set rest [lrange $objSplit 1 end]
@@ -68,6 +82,9 @@ namespace eval ::SimpleTemplater {
                     set newObj "\[dict get $newObj $index\]"
                 }
             }
+        }
+        if { $html_encode } {
+            return "\[::SimpleTemplater::htmlEncode $newObj $tick\]"
         }
         return $newObj
     }
@@ -141,7 +158,7 @@ namespace eval ::SimpleTemplater {
                     set init 0
                 }
                 if { $double_char == "\}\}" } {
-                    lappend str [join [lrange $save 0 [expr $last_open - 1]] ""] [processObject [string trim [join $object ""]]]
+                    lappend str [join [lrange $save 0 [expr $last_open - 1]] ""] [processObject [string trim [join $object ""]] 1]
                     set save ""
                     set object ""
                     set start 0
