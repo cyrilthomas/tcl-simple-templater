@@ -87,7 +87,7 @@ namespace eval ::SimpleTemplater {
         return $object
     }
 
-    proc processObject { object { html_encode 0 } {tick 0 } } {
+    proc processObject { object { html_encode 0 } { tick 0 } } {
         variable debug
 
         lappend objSplit {*}[split $object |]
@@ -324,6 +324,7 @@ namespace eval ::SimpleTemplater {
         set loop(0) 0
         set loopCnt 0
         # array set object [uplevel subst [list $obj]]
+        array set object {}
         foreach { var val } $obj {
            array set object [list $var [uplevel subst [list $val]]]
         }
