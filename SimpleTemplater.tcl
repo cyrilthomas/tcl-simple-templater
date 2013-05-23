@@ -67,6 +67,26 @@ namespace eval ::SimpleTemplater {
         lappend _bufferOut $msg
     }
 
+    proc applyFilters { object filter html_encode_var tick_var } {
+        upvar $html_encode_var html_encode
+        upvar $tick_var tick
+
+        switch $filter {
+            safe {
+                set html_encode 0
+            }
+            tick {
+                set tick 1
+            }
+            test {
+                # new filters could be added like-wise
+                set object "\[list $object\]"
+            }
+            default {}
+        }
+        return $object
+    }
+
     proc processObject { object { html_encode 0 } {tick 0 } } {
         variable debug
 
@@ -74,11 +94,6 @@ namespace eval ::SimpleTemplater {
         set object [lindex $objSplit 0]
         set transformFuncs [lrange $objSplit 1 end]
         if { $debug } { puts stderr "object : '$object' transform functions: '$transformFuncs'" }
-        set pos [lsearch $transformFuncs "safe"]
-        if { $pos > -1 } {
-            set html_encode 0
-            set transformFuncs [lreplace $transformFuncs $pos $pos]
-        }
         set objSplit ""
         lappend objSplit {*}[split $object "."]
         set mainObj [lindex $objSplit 0]
@@ -95,6 +110,11 @@ namespace eval ::SimpleTemplater {
                 }
             }
         }
+
+        foreach filter $transformFuncs {
+            set newObj [applyFilters $newObj $filter html_encode tick]
+        }
+
         if { $html_encode } {
             return "\[::SimpleTemplater::htmlEncode $newObj $tick\]"
         }
