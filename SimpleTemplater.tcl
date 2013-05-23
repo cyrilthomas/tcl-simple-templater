@@ -68,6 +68,18 @@ namespace eval ::SimpleTemplater {
     }
 
     proc processObject { object { html_encode 0 } {tick 0 } } {
+        variable debug
+
+        lappend objSplit {*}[split $object |]
+        set object [lindex $objSplit 0]
+        set transformFuncs [lrange $objSplit 1 end]
+        if { $debug } { puts stderr "object : '$object' transform functions: '$transformFuncs'" }
+        set pos [lsearch $transformFuncs "safe"]
+        if { $pos > -1 } {
+            set html_encode 0
+            set transformFuncs [lreplace $transformFuncs $pos $pos]
+        }
+        set objSplit ""
         lappend objSplit {*}[split $object "."]
         set mainObj [lindex $objSplit 0]
         set rest [lrange $objSplit 1 end]
@@ -206,7 +218,7 @@ namespace eval ::SimpleTemplater {
         foreach line $template {
 
             if { [regexp "(^ *)$functionPattern" $line --> indent function iter operator limiter] } {
-                if { $debug } { puts "function:$function iter:$iter operator:$operator limiter:$limiter" }
+                if { $debug } { puts stderr "function:$function iter:$iter operator:$operator limiter:$limiter" }
                 lappend call_stack $function
                 set params [list $function $iter $operator $limiter]
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
@@ -223,7 +235,7 @@ namespace eval ::SimpleTemplater {
                 }
                 continue
             } elseif { [regexp "(^ *)$functionPatternWithIndex" $line --> indent function iter operator limiter] } {
-                if { $debug } { puts "function:$function iter:$iter operator:$operator limiter:$limiter" }
+                if { $debug } { puts stderr "function:$function iter:$iter operator:$operator limiter:$limiter" }
                 lappend call_stack $function
                 set params [list $function $iter $operator $limiter]
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
@@ -302,7 +314,7 @@ namespace eval ::SimpleTemplater {
         set output [parser template]
 
         if { $debug } {
-            puts $output
+            puts stderr $output
             codeGenerator $output
         }
         eval $output
