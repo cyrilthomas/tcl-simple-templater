@@ -3,7 +3,7 @@
 lappend auto_path .
 source SimpleTemplater.tcl
 
-set ::SimpleTemplater::debug 0
+# set ::SimpleTemplater::debug 1
 set begin [clock milliseconds]
 
 puts [::SimpleTemplater::renderHtml ex2.tpl {
@@ -35,6 +35,11 @@ puts [::SimpleTemplater::renderHtml ex2.tpl {
                 email   "sam.philip@e-mail.com" \
             ]"
         }
+    }
+
+    sample {
+        a b c d
+        e f g h
     }
 }]
 

@@ -21,6 +21,10 @@
                     <!-- optional else block -->
                     <tr><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
                 {% endif %}
+                {% for v1, v2, v3, v4 in sample %}
+                     <tr><td>{{ v1 }}</td><td>{{ v2 }}</td></tr>
+                     <tr><td>{{ v3 }}</td><td>{{ v4 }}</td></tr>
+                {% endfor %}
                 <tr/>
             {% endfor %}
         </table>
