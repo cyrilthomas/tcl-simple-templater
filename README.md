@@ -115,16 +115,98 @@ Into this
 ```tcl
 source <file_path>/SimpleTemplater.tcl
 puts [::SimpleTemplater:renderHtml "<template_path>" {
-    <[Template Object Name]>    <[TCL Variable]>
+    <[Template Object Name]>    <[TCL Variable|String]>
 }]
 ```
+### Variables
+#### Simple variables
+```
+name {John}
+
+<p>{{name}}</p>
+```
+#### Nested data structures
+```
+address {
+  {
+    name {John Doe}
+  }
+
+  {
+    name {Philip Alex}
+  }
+
+}
+{% for addr in address %}
+   <p>{{loop.count}} Firstname: {{addr.name.0}}</p>
+{% endfor %}
+```
+a numeric index gets treated like a list and a word index gets treated as a dict
+### For loop syntax
+#### Single iterator
+```
+{% for a in addr %}
+<p>{{a}}</p>
+{% endfor %}
+```
+#### Multi-iterator
+```html
+{% for a,b,c,d in addr %}
+<p>{{a}} {{b}} {{c}} {{d}}</p>
+{% endfor %}
+```
+#### Iterating simple static data
+```html
+{% for a in 'hello world' %}
+<p>{{a}}</p> <!-- first hello second world -->
+{% endfor %}
+```
+#### For loop count
+```html
+{% for a in addr %}
+<p>{{ loop.count }}</p>
+{% endfor %}
+```
+#### Supports break and continue within for loops
+```html
+{% for a in 'hello world' %}
+  {% if a == 'hello' %}
+    {% continue %}
+  {% endif %}
+  <!-- do something -->
+{% endfor %}
+```
+Break can be used in a smilar fashion ```{% break %}```
+
+### If loop syntax
+```html
+{% if name.0 == name.1 %}
+<p>You have an interesting name!</p>
+{% endif %}
+```
+
+```html
+{% if name.0 == 'John' %}
+ <!-- do something -->
+{% endif %}
+```
+#### Optional else block
+```html
+{% if name.0 == 'John' %}
+ <!-- do something -->
+{% else %}
+ <!-- do something else-->
+{% endif %} 
+```
+if loop supports the following (in < > <= >= ni == !=)
 ## Auto-escaping
-Any variable used within the template would be auto-escaped
-Suppose the email id of a person is saved as 
+Any variable used within the template would be auto-escaped.
+Consider an email id of a person saved as 
 ```javascript
 <script type="text/javascript">alert('XSS');</script>
 ```
-The variable would get automatically escaped by the parser
+would make your site vulnerable to XSS.
+SimpleTemplater would automatically get all your variables escaped
 ```html
 <tr><td>Email</td><td>{{ addr.personal.email }}</td></tr>
 ```
@@ -132,7 +214,11 @@ into
 ```html
 <tr><td>Email</td><td>&lt;script type=&quot;text/javascript&quot;&gt;alert(&#39;XSS&#39;);&lt;/script&gt;</td></tr>
 ```
-You can explicitly mark a variable not to be escaped by applying the safe filter
+instead of
+```html
+<tr><td>Email</td><td><script type="text/javascript">alert('XSS');</script></td></tr>
+```
+You can explicitly mark a variable not to be escaped by applying a safe filter
 ```html
 <tr><td>Email</td><td>{{ addr.personal.email|safe }}</td></tr>
 ```
