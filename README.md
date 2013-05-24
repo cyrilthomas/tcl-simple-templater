@@ -4,7 +4,7 @@ SimpleTemplater
 A simple html template parser for TCL (inspired from Python Django)
 
 Basically converts a HTML template like this
-```
+```html
 <html>
     <header>
         <script type="text/javascript">
@@ -35,8 +35,8 @@ Basically converts a HTML template like this
 </html>
 ```
 When provided the necessary parameters as
-```
-:puts [::SimpleTemplater::renderHtml ex2.tpl {
+```tcl
+puts [::SimpleTemplater::renderHtml ex2.tpl {
     address_book {
         {
             name {John Doe}
@@ -69,8 +69,7 @@ When provided the necessary parameters as
 }]
 ```    
 Into this
-```
-
+```html
 <html>
     <header>
         <script type="text/javascript">
@@ -112,22 +111,25 @@ Into this
     </body>
 </html>
 ```
-Auto-escaping
-=============
+## Usage
+```tcl
+source <file_path>/SimpleTemplater.tcl
+```
+## Auto-escaping
 Any variable used within the template would be auto-escaped
 Suppose the email id of a person is saved as 
-```
+```javascript
 <script type="text/javascript">alert('XSS');</script>
 ```
 The variable would get automatically escaped by the parser
-```
+```html
 <tr><td>Email</td><td>{{ addr.personal.email }}</td></tr>
 ```
 into
-```
+```html
 <tr><td>Email</td><td>&lt;script type=&quot;text/javascript&quot;&gt;alert(&#39;XSS&#39;);&lt;/script&gt;</td></tr>
 ```
 You can explicitly mark a variable not to be escaped by applying the safe filter
-```
+```html
 <tr><td>Email</td><td>{{ addr.personal.email|safe }}</td></tr>
 ```
