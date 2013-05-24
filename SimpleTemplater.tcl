@@ -132,10 +132,13 @@ namespace eval ::SimpleTemplater {
 
         regsub -all {([][$\\])} $limiter {\\\1} limiter ;# disable command executions
         if { $operator ni $functionOperators($function) } { error "Unsupported operator '$operator' used!" }
+        foreach it [split $iter ,] {
+            lappend newIter ::SimpleTemplater::object($it)
+        }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
-            return "foreach ::SimpleTemplater::object($iter) \[list $new_limiter\] \{"
+            return "foreach \{ $newIter \} \[list $new_limiter\] \{"
         } else {
-            return "foreach ::SimpleTemplater::object($iter) [processObject $limiter] \{"
+            return "foreach \{ $newIter \} [processObject $limiter] \{"
         }
     }
 
