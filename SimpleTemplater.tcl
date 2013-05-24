@@ -29,7 +29,7 @@ namespace eval ::SimpleTemplater {
     unset _op key val v
 
     set additionalAttributes        "loop.count"
-    set functionPattern             "{% *([join $functions |]) +(\\w+) +([join $operators |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') *%}"
+    set functionPattern             "{% *([join $functions |]) +(\\w+(?: *, *\\w+)*) +([join $operators |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') *%}"
     set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') +([join $operators |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') *%}"
     set functionEndPattern          "{% *end([join $functions |]) *%}"
 
@@ -133,6 +133,7 @@ namespace eval ::SimpleTemplater {
         regsub -all {([][$\\])} $limiter {\\\1} limiter ;# disable command executions
         if { $operator ni $functionOperators($function) } { error "Unsupported operator '$operator' used!" }
         foreach it [split $iter ,] {
+            set it [string trim $it]
             lappend newIter ::SimpleTemplater::object($it)
         }
         if { [regexp "'(.*)'" $limiter --> new_limiter] } {
