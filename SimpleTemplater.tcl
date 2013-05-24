@@ -242,7 +242,7 @@ namespace eval ::SimpleTemplater {
 
         foreach line $template {
 
-            if { [regexp "(^ *)$functionPattern" $line --> indent function iter operator limiter] } {
+            if { [regexp "(^\\s*)$functionPattern" $line --> indent function iter operator limiter] } {
                 if { $debug } { puts stderr "function:$function iter:$iter operator:$operator limiter:$limiter" }
                 lappend call_stack $function
                 set params [list $function $iter $operator $limiter]
@@ -259,7 +259,7 @@ namespace eval ::SimpleTemplater {
                     bufferOut "[string repeat " " 4]${indent}set ::SimpleTemplater::object(loop.count) \$::SimpleTemplater::loop(\$::SimpleTemplater::loop(last_loop))"
                 }
                 continue
-            } elseif { [regexp "(^ *)$functionPatternWithIndex" $line --> indent function iter operator limiter] } {
+            } elseif { [regexp "(^\\s*)$functionPatternWithIndex" $line --> indent function iter operator limiter] } {
                 if { $debug } { puts stderr "function:$function iter:$iter operator:$operator limiter:$limiter" }
                 lappend call_stack $function
                 set params [list $function $iter $operator $limiter]
@@ -272,7 +272,7 @@ namespace eval ::SimpleTemplater {
                 [apply { { line out_var } {
                     upvar $out_var out
                     set out ""
-                    if { [regexp "(^ *){% *(else) *%}" $line --> indent object] } {
+                    if { [regexp "(^\\s*){% *(else) *%}" $line --> indent object] } {
                         set out "${indent}\} else \{"
                         return 1
                     }
@@ -284,19 +284,19 @@ namespace eval ::SimpleTemplater {
                 continue
             }
 
-            if { [regexp "(^ *){% *continue *%}" $line --> indent] } {
+            if { [regexp "(^\\s*){% *continue *%}" $line --> indent] } {
                 set indent "${indent}[string repeat " " [string length $lappendCmd]][string repeat " " 4]"
                 bufferOut "${indent}continue"
                 continue
             }
 
-            if { [regexp "(^ *){% *break *%}" $line --> indent] } {
+            if { [regexp "(^\\s*){% *break *%}" $line --> indent] } {
                 set indent "${indent}[string repeat " " [string length $lappendCmd]][string repeat " " 4]"
                 bufferOut "${indent}break"
                 continue
             }
 
-            if { [regexp "(^ *)$functionEndPattern" $line --> indent function_close] } {
+            if { [regexp "(^\\s*)$functionEndPattern" $line --> indent function_close] } {
                 set function [lindex $call_stack end]
                 set call_stack [lrange $call_stack 0 end-1]
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
