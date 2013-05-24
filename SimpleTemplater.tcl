@@ -81,6 +81,7 @@ namespace eval ::SimpleTemplater {
             test {
                 # new filters could be added like-wise
                 set object "\[list $object\]"
+                # set object "\[::SimpleTemplater::newFilterProc $object\]"
             }
             default {}
         }
@@ -326,7 +327,7 @@ namespace eval ::SimpleTemplater {
         # array set object [uplevel subst [list $obj]]
         array set object {}
         foreach { var val } $obj {
-           array set object [list $var [uplevel subst [list $val]]]
+            array set object [list $var [uplevel subst [list $val]]]
         }
         # parray object
 
