@@ -112,3 +112,22 @@ Into this
     </body>
 </html>
 ```
+Auto-escaping
+=============
+Any variable used within the template would be auto-escaped
+Suppose the email id of a person is saved as 
+```
+<script type="text/javascript">alert('XSS');</script>
+```
+The variable would get automatically escaped by the parser
+```
+<tr><td>Email</td><td>{{ addr.personal.email }}</td></tr>
+```
+into
+```
+<tr><td>Email</td><td>&lt;script type=&quot;text/javascript&quot;&gt;alert(&#39;XSS&#39;);&lt;/script&gt;</td></tr>
+```
+You can explicitly mark a variable not to be escaped by applying the safe filter
+```
+<tr><td>Email</td><td>{{ addr.personal.email|safe }}</td></tr>
+```
