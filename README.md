@@ -114,6 +114,9 @@ Into this
 ## Usage
 ```tcl
 source <file_path>/SimpleTemplater.tcl
+puts [::SimpleTemplater:renderHtml "<template_path>" {
+    <[Template Object Name]>    <[TCL Variable]>
+}]
 ```
 ## Auto-escaping
 Any variable used within the template would be auto-escaped
