@@ -5,6 +5,7 @@ A simple html template parser for TCL (inspired from Python Django)
 
 Basically converts a HTML template like this
 ```html
+<!-- File ex2.tpl -->
 <html>
     <header>
         <script type="text/javascript">
@@ -34,7 +35,7 @@ Basically converts a HTML template like this
     </body>
 </html>
 ```
-When provided the necessary parameters as
+when provided with the view data structure as
 ```tcl
 puts [::SimpleTemplater::render ex2.tpl {
     address_book {
@@ -68,7 +69,7 @@ puts [::SimpleTemplater::render ex2.tpl {
     }
 }]
 ```    
-Into this
+into 
 ```html
 <html>
     <header>
