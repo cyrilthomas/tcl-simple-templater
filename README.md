@@ -2,8 +2,8 @@ SimpleTemplater
 ===================
 
 A simple html template parser for TCL (inspired from Python Django)
-
-Basically converts a HTML template like this
+## Synopsis
+Converts a HTML template like this
 ```html
 <!-- File ex2.tpl -->
 <html>
@@ -112,12 +112,17 @@ into
     </body>
 </html>
 ```
+## Syntax
+```tcl
+::SimpleTemplater::render "<template_path>" "<view>"
+```
 ## Usage
 ```tcl
 source <file_path>/SimpleTemplater.tcl
 puts [::SimpleTemplater::render "<template_path>" {
     <[Template Object Name]>    <[TCL Variable|String]>
 }]
+
 ```
 ### Variables
 #### Simple variables
