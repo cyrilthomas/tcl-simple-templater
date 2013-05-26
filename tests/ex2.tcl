@@ -6,7 +6,7 @@ source SimpleTemplater.tcl
 # set ::SimpleTemplater::debug 1
 set begin [clock milliseconds]
 
-puts [::SimpleTemplater::renderHtml ex2.tpl {
+puts [::SimpleTemplater::render ex2.tpl {
     address_book {
         {
             name {John Doe}

@@ -314,7 +314,7 @@ namespace eval ::SimpleTemplater {
         return [join $_bufferOut \n]
     }
 
-    proc renderHtml { template obj } {
+    proc render { template obj } {
         variable object
         variable debug
         variable html

@@ -46,7 +46,7 @@ proc execExample { html } {
     close $fh
 
     set ::SimpleTemplater::debug 1
-    puts "Template:\n$html\nRendered:\n[::SimpleTemplater::renderHtml $tmpl_file $::data]"
+    puts "Template:\n$html\nRendered:\n[::SimpleTemplater::render $tmpl_file $::data]"
     file delete $tmpl_file
 }
 

@@ -20,7 +20,7 @@ if { [catch {
         }
         # puts $languages
 
-        set html [::SimpleTemplater::renderHtml ex1.tpl {
+        set html [::SimpleTemplater::render ex1.tpl {
             states {
                 {
                     name    "Alabama"
@@ -63,7 +63,7 @@ if { [catch {
     } errMsg ]
 } {
     # To be caught at the highest level
-    set html [::SimpleTemplater::renderHtml "error.tpl" {
+    set html [::SimpleTemplater::render "error.tpl" {
         error "[::SimpleTemplater::error2Html $errMsg]"
         info "[::SimpleTemplater::error2Html $::errorInfo]"
     }]
