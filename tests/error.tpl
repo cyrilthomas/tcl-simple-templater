@@ -6,9 +6,9 @@
             <div style="background-color:#BABAD1">
                 <dl>
                   <dt style="color:#ff0000;">Short Error</dt>
-                  <dd>{{ error }}</dd>
+                  <dd>{{ error|safe }}</dd>
                   <dt style="color:#ff0000;">Long Error</dt>
-                  <dd>{{ info }}</dd>
+                  <dd>{{ info|safe }}</dd>
                 </dl>
             </div>
         </p>
