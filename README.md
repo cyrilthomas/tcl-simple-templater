@@ -36,7 +36,7 @@ Basically converts a HTML template like this
 ```
 When provided the necessary parameters as
 ```tcl
-puts [::SimpleTemplater::renderHtml ex2.tpl {
+puts [::SimpleTemplater::render ex2.tpl {
     address_book {
         {
             name {John Doe}
@@ -114,7 +114,7 @@ Into this
 ## Usage
 ```tcl
 source <file_path>/SimpleTemplater.tcl
-puts [::SimpleTemplater:renderHtml "<template_path>" {
+puts [::SimpleTemplater::render "<template_path>" {
     <[Template Object Name]>    <[TCL Variable|String]>
 }]
 ```
@@ -160,7 +160,7 @@ Output
 <p>1 Firstname: John</p>
 <p>2 Firstname: Philip</p>
 ```
-a numeric index gets treated like a list and a word index gets treated as a dict
+*A list element can be accessed by providing the numeric index `{{ context_var.index }}` and a key-value dictionary styled list element can be accessed providing the key as the index `{{ context_var.key }}`*
 ### For loop syntax
 #### Single iterator
 ```
@@ -186,7 +186,8 @@ a numeric index gets treated like a list and a word index gets treated as a dict
 <p>{{ loop.count }}</p>
 {% endfor %}
 ```
-#### Supports break and continue within for loops (may get discontinued as they are not usually supported in standard template parsers)
+#### Supports break and continue within for loops 
+*(may get discontinued as they are not usually supported in standard template parsers)*
 ```html
 {% for a in 'hello world' %}
   {% if a == 'hello' %}
@@ -195,7 +196,7 @@ a numeric index gets treated like a list and a word index gets treated as a dict
   <!-- do something -->
 {% endfor %}
 ```
-Break can be used in a smilar fashion ```{% break %}```
+*Break can be also used in a similar fashion ```{% break %}```*
 
 ### If loop syntax
 ```html
