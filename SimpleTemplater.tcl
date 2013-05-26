@@ -88,8 +88,14 @@ namespace eval ::SimpleTemplater {
         return $object
     }
 
-    proc processObject { object { html_encode 0 } { tick 0 } } {
+    proc processObject { object { no_loop 0 } } {
         variable debug
+
+        set htmlEncode 0
+        set tick 0
+        if { $no_loop } {
+            set htmlEncode 1
+        }
 
         lappend objSplit {*}[split $object |]
         set object [lindex $objSplit 0]
@@ -113,10 +119,10 @@ namespace eval ::SimpleTemplater {
         }
 
         foreach filter $transformFuncs {
-            set newObj [applyFilters $newObj $filter html_encode tick]
+            set newObj [applyFilters $newObj $filter htmlEncode tick]
         }
 
-        if { $html_encode } {
+        if { $htmlEncode } {
             return "\[::SimpleTemplater::htmlEncode $newObj $tick\]"
         }
         return $newObj
