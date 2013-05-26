@@ -248,3 +248,7 @@ You can explicitly mark a variable not to be escaped by applying a safe filter
 ```html
 <tr><td>Email</td><td>{{ addr.personal.email|safe }}</td></tr>
 ```
+## Filters
+{{ context_var|filter }}
+#### Safe
+#### Tick
