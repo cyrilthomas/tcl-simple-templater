@@ -120,26 +120,45 @@ puts [::SimpleTemplater:renderHtml "<template_path>" {
 ```
 ### Variables
 #### Simple variables
+View
+``` 
+{
+    name {John}
+}
 ```
-name {John}
-
-<p>{{name}}</p>
+Template
+```
+<p>Hello {{name}}</p>
+```
+Output
+```
+<p>Hello {{name}}</p>
 ```
 #### Nested data structures
+View
 ```
-address {
-  {
-    name {John Doe}
-  }
-
-  {
-    name {Philip Alex}
-  }
-
+{
+    address {
+        {
+            name {John Doe}
+        }
+        
+        {
+            name {Philip Alex}
+        }
+    }
 }
+```
+Template
+```
 {% for addr in address %}
    <p>{{loop.count}} Firstname: {{addr.name.0}}</p>
 {% endfor %}
+```
+Output
+```
+<p>1 Firstname: John</p>
+<p>2 Firstname: Philip</p>
 ```
 a numeric index gets treated like a list and a word index gets treated as a dict
 ### For loop syntax
@@ -167,7 +186,7 @@ a numeric index gets treated like a list and a word index gets treated as a dict
 <p>{{ loop.count }}</p>
 {% endfor %}
 ```
-#### Supports break and continue within for loops
+#### Supports break and continue within for loops (may get discontinued as they are not usually supported in standard template parsers)
 ```html
 {% for a in 'hello world' %}
   {% if a == 'hello' %}
