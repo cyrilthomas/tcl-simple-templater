@@ -329,6 +329,7 @@ namespace eval ::SimpleTemplater {
         set loop(0) 0
         set loopCnt 0
         # array set object [uplevel subst [list $obj]]
+        catch { unset object }
         array set object {}
         foreach { var val } $obj {
             array set object [list $var [uplevel subst [list $val]]]
