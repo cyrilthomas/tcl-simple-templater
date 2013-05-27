@@ -249,6 +249,8 @@ You can explicitly mark a variable not to be escaped by applying a safe filter
 <tr><td>Email</td><td>{{ addr.personal.email|safe }}</td></tr>
 ```
 ## Filters
-{{ context_var|filter }}
-#### Safe
-#### Tick
+Usage: `{{ context_var|<filter> }}`
+#### safe
+`{{ context_var|safe }}` prevents your variable from being auto-escaped
+#### tick
+`{{ context_var|tick }}` converts all `'` in your variable to `´` after escaping
