@@ -138,7 +138,7 @@ Template
 ```
 Output
 ```
-<p>Hello {{name}}</p>
+<p>Hello John</p>
 ```
 #### Nested data structures
 View
