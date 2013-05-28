@@ -2,6 +2,7 @@
 
 lappend auto_path .
 source SimpleTemplater.tcl
+source helper_filters.tcl
 
 # set ::SimpleTemplater::debug 1
 set begin [clock milliseconds]
@@ -15,11 +16,30 @@ proc RegSub { context } {
     return [regsub -all {\-} $context { }]
 }
 
-::SimpleTemplater::registerFilter phone     RegSub
-::SimpleTemplater::registerFilter prefix_ph FormatPrefixedPhoneNumber
-::SimpleTemplater::registerFilter bold      ::SimpleTemplater::helper::filters::bold
-::SimpleTemplater::registerFilter italic    ::SimpleTemplater::helper::filters::italic
-::SimpleTemplater::registerFilter ulist     ::SimpleTemplater::helper::filters::ulist
+proc HyperLink { context } {
+    return "<a href=\"$context\">$context</a>"
+}
+
+proc Modulus { context args } {
+    return [expr { $context % [lindex $args 0] }]
+}
+
+proc Color { context } {
+    if { $context == 1 } {
+        return "background-color:#EEE"
+    } else {
+        return "background-color:transparent"
+    }
+}
+
+::SimpleTemplater::registerFilter -safe false -filter phone     -proc RegSub
+::SimpleTemplater::registerFilter -safe false -filter prefix_ph -proc FormatPrefixedPhoneNumber
+::SimpleTemplater::registerFilter -safe false -filter bold      -proc ::SimpleTemplater::helper::filters::bold
+::SimpleTemplater::registerFilter -safe true  -filter italic    -proc ::SimpleTemplater::helper::filters::italic
+::SimpleTemplater::registerFilter -safe false -filter ulist     -proc ::SimpleTemplater::helper::filters::ulist
+::SimpleTemplater::registerFilter -safe true  -filter link      -proc HyperLink
+::SimpleTemplater::registerFilter -safe false -filter modulus   -proc Modulus
+::SimpleTemplater::registerFilter -safe false -filter color     -proc Color
 
 puts [::SimpleTemplater::render ex2.tpl {
     address_book {
@@ -31,14 +51,15 @@ puts [::SimpleTemplater::render ex2.tpl {
                 phone   "001-123-12345"
                 email   "john.doe@e-mail.com"
             }
-
+            url {http://www.google.com}
         }
 
         {
-            name {David Beck}
+            name {David's Beck}
             place {England}
             phone {1469664972}
             personal {}
+            url {http://www.facebook.com}
         }
 
         {
@@ -49,6 +70,7 @@ puts [::SimpleTemplater::render ex2.tpl {
                 phone   "007-134-4567" \
                 email   "sam.philip@e-mail.com" \
             ]"
+            url {http://www.yahoo.com}
         }
     }
 

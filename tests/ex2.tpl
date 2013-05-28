@@ -7,19 +7,25 @@
     <body>
         <table border="1">
             {% for addr in address_book %}
-                <tr><td colspan="2" style="text-align:center;"><h4><i>{{ loop.count }}# {{ addr.name }}</i></h4></td></tr>
-                <tr><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
-                <tr><td>Firstname</td><td>{{ addr.name.0|safe|bold|italic }}</td></tr>
-                <tr><td>Lastname</td><td>{{ addr.name.1 }}</td></tr>
-                <tr><td>Place</td><td>{{ addr.place }}</td></tr>
-                <tr><td>Phone</td><td>{{ addr.phone|prefix_ph|safe }}</td></tr>
+                {% if loop.count|modulus:"2" == '1' %}
+                <tr style="{{ loop.count|modulus:"2" }}"><td colspan="2" style='text-align:center;'><b><i>[Modulus]</i></b></td></tr>
+                {% else %}
+                <tr style="{{ loop.count|modulus:"2" }}"><td colspan="2" style='text-align:center;'><b><i>[Not Modulus]</i></b></td></tr>
+                {% endif %}
+                <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style="text-align:center;"><h4><i>{{ loop.count }}# {{ addr.name }}</i></h4></td></tr>
+                <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
+                <tr style="{{ loop.count|modulus:"2"|color }}"><td>Firstname</td><td>{{ addr.name.0|bold|italic }}</td></tr>
+                <tr style="{{ loop.count|modulus:"2"|color }}"><td>Lastname</td><td>{{ addr.name.1 }}</td></tr>
+                <tr style="{{ loop.count|modulus:"2"|color }}"><td>Place</td><td>{{ addr.place }}</td></tr>
+                <tr style="{{ loop.count|modulus:"2"|color }}"><td>Phone</td><td>{{ addr.phone|prefix_ph }}</td></tr>
+                <tr style="{{ loop.count|modulus:"2"|color }}"><td>Website</td><td>{{ addr.url|link }}</td></tr>
                 {% if addr.personal != '' %}
-                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
-                    <tr><td>Phone</td><td>{{ addr.personal.phone|phone   }}</td></tr>
-                    <tr><td>Email</td><td>{{ addr.personal.email }}</td></tr>
+                    <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
+                    <tr style="{{ loop.count|modulus:"2"|color }}"><td>Phone</td><td>{{ addr.personal.phone|phone   }}</td></tr>
+                    <tr style="{{ loop.count|modulus:"2"|color }}"><td>Email</td><td>{{ addr.personal.email }}</td></tr>
                 {% else %}
                     <!-- optional else block -->
-                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
+                    <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
                 {% endif %}
                 {% for v1, v2, v3, v4 in sample %}
                      <tr><td>Notes {{loop.count}}</td><td>{{ v1 }} {{ v2 }} {{ v3 }} {{ v4 }}</td></tr>
