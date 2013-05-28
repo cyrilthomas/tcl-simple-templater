@@ -3,7 +3,6 @@
 # A Simple Template Parser
 
 namespace eval ::SimpleTemplater {
-    source helper_filters.tcl
 
     set debug 0
     array set customFilter {}
@@ -74,9 +73,30 @@ namespace eval ::SimpleTemplater {
         return "\[$cmd\]"
     }
 
-    proc registerFilter { name body } {
+    proc registerFilter { args } {
         variable customFilter
-        set customFilter($name) $body
+
+        set name [dict get $args "-filter"]
+        set proc [dict get $args "-proc"]
+        set customFilter($name) $proc
+        set customFilter($name,html_encode) 1
+        set customFilter($name,tick) 0
+
+        if { [dict exists $args "-safe"] } {
+            if { [dict get $args "-safe"] == "true" } {
+                set customFilter($name,html_encode) 0
+            } elseif { [dict get $args "-safe"] == "false" } {
+                set customFilter($name,html_encode) 1
+            }
+        }
+
+        if { [dict exists $args "-tick"] } {
+            if { [dict get $args "-tick"] == "true" } {
+                set customFilter($name,tick) 1
+            } elseif { [dict get $args "-tick"] == "false" } {
+                set customFilter($name,tick) 0
+            }
+        }
     }
 
     proc applyFilters { object filter html_encode_var tick_var } {
@@ -100,9 +120,15 @@ namespace eval ::SimpleTemplater {
         return $object
     }
 
-    proc processObject { object { html_encode 0 } { tick 0 } } {
+    proc processObject { object { not_loop 0 } } {
         variable debug
         variable customFilter
+
+        set html_encode 0
+        set tick 0
+        if { $not_loop } {
+            set html_encode 1
+        }
 
         lappend objSplit {*}[split $object |]
         set object [lindex $objSplit 0]
@@ -129,6 +155,12 @@ namespace eval ::SimpleTemplater {
             set func ""
             if [info exists customFilter($filter)] {
                 set newObj "\[$customFilter($filter) $newObj\]"
+                if { !$customFilter($filter,html_encode) } {
+                    set html_encode 0
+                }
+                if { $customFilter($filter,tick) } {
+                    set tick 1
+                }
                 continue
             }
             set newObj [applyFilters $newObj $filter html_encode tick]
