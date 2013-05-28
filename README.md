@@ -2,9 +2,10 @@ SimpleTemplater
 ===================
 
 A simple html template parser for TCL (inspired from Python Django)
-
-Basically converts a HTML template like this
+## Synopsis
+Converts a HTML template like this
 ```html
+<!-- File ex2.tpl -->
 <html>
     <header>
         <script type="text/javascript">
@@ -34,9 +35,9 @@ Basically converts a HTML template like this
     </body>
 </html>
 ```
-When provided the necessary parameters as
+when provided with the view data structure as
 ```tcl
-puts [::SimpleTemplater::renderHtml ex2.tpl {
+puts [::SimpleTemplater::render ex2.tpl {
     address_book {
         {
             name {John Doe}
@@ -68,7 +69,7 @@ puts [::SimpleTemplater::renderHtml ex2.tpl {
     }
 }]
 ```    
-Into this
+into 
 ```html
 <html>
     <header>
@@ -111,12 +112,17 @@ Into this
     </body>
 </html>
 ```
+## Syntax
+```tcl
+::SimpleTemplater::render "<template_path>" "<view>"
+```
 ## Usage
 ```tcl
 source <file_path>/SimpleTemplater.tcl
-puts [::SimpleTemplater:renderHtml "<template_path>" {
+puts [::SimpleTemplater::render "<template_path>" {
     <[Template Object Name]>    <[TCL Variable|String]>
 }]
+
 ```
 ### Variables
 #### Simple variables
@@ -132,7 +138,7 @@ Template
 ```
 Output
 ```
-<p>Hello {{name}}</p>
+<p>Hello John</p>
 ```
 #### Nested data structures
 View
@@ -160,7 +166,7 @@ Output
 <p>1 Firstname: John</p>
 <p>2 Firstname: Philip</p>
 ```
-a numeric index gets treated like a list and a word index gets treated as a dict
+*A list element can be accessed by providing the numeric index `{{ context_var.index }}` and a key-value dictionary styled list element can be accessed providing the key as the index `{{ context_var.key }}`*
 ### For loop syntax
 #### Single iterator
 ```
@@ -186,7 +192,8 @@ a numeric index gets treated like a list and a word index gets treated as a dict
 <p>{{ loop.count }}</p>
 {% endfor %}
 ```
-#### Supports break and continue within for loops (may get discontinued as they are not usually supported in standard template parsers)
+#### Supports break and continue within for loops 
+*(may get discontinued as they are not usually supported in standard template parsers)*
 ```html
 {% for a in 'hello world' %}
   {% if a == 'hello' %}
@@ -195,7 +202,7 @@ a numeric index gets treated like a list and a word index gets treated as a dict
   <!-- do something -->
 {% endfor %}
 ```
-Break can be used in a smilar fashion ```{% break %}```
+*Break can be also used in a similar fashion ```{% break %}```*
 
 ### If loop syntax
 ```html
@@ -241,3 +248,9 @@ You can explicitly mark a variable not to be escaped by applying a safe filter
 ```html
 <tr><td>Email</td><td>{{ addr.personal.email|safe }}</td></tr>
 ```
+## Filters
+Usage: `{{ context_var|<filter> }}`
+#### safe
+`{{ context_var|safe }}` prevents your variable from being auto-escaped
+#### tick
+`{{ context_var|tick }}` converts all `'` in your variable to `´` after escaping

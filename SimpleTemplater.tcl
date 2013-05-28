@@ -122,13 +122,14 @@ namespace eval ::SimpleTemplater {
     }
 
     proc processObject { object { not_loop 0 } } {
+
         variable debug
         variable customFilter
 
-        set html_encode 0
+        set htmlEncode 0
         set tick 0
         if { $not_loop } {
-            set html_encode 1
+            set htmlEncode 1
         }
 
         lappend objSplit {*}[split $object |]
@@ -168,17 +169,17 @@ namespace eval ::SimpleTemplater {
                     set newObj "\[$customFilter($filter) $newObj\]"
                 }
                 if { !$customFilter($filter,html_encode) } {
-                    set html_encode 0
+                    set htmlEncode 0
                 }
                 if { $customFilter($filter,tick) } {
                     set tick 1
                 }
                 continue
             }
-            set newObj [applyFilters $newObj $filter html_encode tick]
+            set newObj [applyFilters $newObj $filter htmlEncode tick]
         }
 
-        if { $html_encode } {
+        if { $htmlEncode } {
             return "\[::SimpleTemplater::htmlEncode $newObj $tick\]"
         }
         return $newObj
