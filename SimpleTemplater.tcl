@@ -3,8 +3,10 @@
 # A Simple Template Parser
 
 namespace eval ::SimpleTemplater {
+    source helper_filters.tcl
 
     set debug 0
+    array set customFilter {}
     set functions {
         for
         if
@@ -67,6 +69,16 @@ namespace eval ::SimpleTemplater {
         lappend _bufferOut $msg
     }
 
+    proc executeCommand { cmd } {
+        puts stderr "\[$cmd\]"
+        return "\[$cmd\]"
+    }
+
+    proc registerFilter { name body } {
+        variable customFilter
+        set customFilter($name) $body
+    }
+
     proc applyFilters { object filter html_encode_var tick_var } {
         upvar $html_encode_var html_encode
         upvar $tick_var tick
@@ -90,6 +102,7 @@ namespace eval ::SimpleTemplater {
 
     proc processObject { object { html_encode 0 } { tick 0 } } {
         variable debug
+        variable customFilter
 
         lappend objSplit {*}[split $object |]
         set object [lindex $objSplit 0]
@@ -113,6 +126,11 @@ namespace eval ::SimpleTemplater {
         }
 
         foreach filter $transformFuncs {
+            set func ""
+            if [info exists customFilter($filter)] {
+                set newObj "\[$customFilter($filter) $newObj\]"
+                continue
+            }
             set newObj [applyFilters $newObj $filter html_encode tick]
         }
 
