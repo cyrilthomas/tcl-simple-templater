@@ -30,8 +30,8 @@ namespace eval ::SimpleTemplater {
     unset _op key val v
 
     set additionalAttributes        "loop.count"
-    set functionPattern             "{% *([join $functions |]) +(\\w+(?: *, *\\w+)*) +(.*) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') *%}"
-    set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +(\\w+(?:\.\\d+|\.\\w+|\|.+)*|[join $additionalAttributes |]|'.*') +(.*) +(\\w+(?:\.\\d+|\.\\w+|\|.+)*|[join $additionalAttributes |]|'.*') *%}"
+    set functionPattern             "{% *([join $functions |]) +(\\w+(?: *, *\\w+)*) +([join $operators |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') *%}"
+    set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +(\\w+(?:\.\\d+|\.\\w+|\|.+)*|[join $additionalAttributes |]|'.*') +([join $operators |]) +(\\w+(?:\.\\d+|\.\\w+|\|.+)*|[join $additionalAttributes |]|'.*') *%}"
     set functionEndPattern          "{% *end([join $functions |]) *%}"
 
     set lappendCmd                  "lappend ::SimpleTemplater::html"
@@ -69,7 +69,8 @@ namespace eval ::SimpleTemplater {
     }
 
     proc executeCommand { cmd } {
-        puts stderr "\[$cmd\]"
+        variable debug
+        if { $debug } { puts stderr "\[$cmd\]" }
         return "\[$cmd\]"
     }
 
@@ -159,7 +160,7 @@ namespace eval ::SimpleTemplater {
             foreach  arg [split $_args ,] {
                 lappend args [string trim $arg]
             }
-            puts stderr "filter : $filter args : $args"
+            if { $debug } { puts stderr "filter : $filter args : $args" }
             if [info exists customFilter($filter)] {
                 if { $args != "" } {
                     set newObj "\[$customFilter($filter) $newObj $args\]"
