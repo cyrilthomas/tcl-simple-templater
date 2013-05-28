@@ -31,7 +31,7 @@ namespace eval ::SimpleTemplater {
 
     set additionalAttributes        "loop.count"
     set functionPattern             "{% *([join $functions |]) +(\\w+(?: *, *\\w+)*) +(.*) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') *%}"
-    set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') +(.*) +(\\w+(?:\.\\d+|\.\\w+)*|[join $additionalAttributes |]|'.*') *%}"
+    set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +(\\w+(?:\.\\d+|\.\\w+|\|.+)*|[join $additionalAttributes |]|'.*') +(.*) +(\\w+(?:\.\\d+|\.\\w+|\|.+)*|[join $additionalAttributes |]|'.*') *%}"
     set functionEndPattern          "{% *end([join $functions |]) *%}"
 
     set lappendCmd                  "lappend ::SimpleTemplater::html"
@@ -151,10 +151,21 @@ namespace eval ::SimpleTemplater {
             }
         }
 
-        foreach filter $transformFuncs {
-            set func ""
+        foreach _filter $transformFuncs {
+            foreach { filter _args } [split $_filter :] { break }
+            set filter [string trim $filter]
+            set args ""
+            set _args [string trim [string trim $_args] "\""]
+            foreach  arg [split $_args ,] {
+                lappend args [string trim $arg]
+            }
+            puts stderr "filter : $filter args : $args"
             if [info exists customFilter($filter)] {
-                set newObj "\[$customFilter($filter) $newObj\]"
+                if { $args != "" } {
+                    set newObj "\[$customFilter($filter) $newObj $args\]"
+                } else {
+                    set newObj "\[$customFilter($filter) $newObj\]"
+                }
                 if { !$customFilter($filter,html_encode) } {
                     set html_encode 0
                 }
