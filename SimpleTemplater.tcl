@@ -5,6 +5,7 @@
 namespace eval ::SimpleTemplater {
 
     set debug 0
+    set nonExistantVar ""
     array set customFilter {}
     set functions {
         for
@@ -72,6 +73,76 @@ namespace eval ::SimpleTemplater {
         variable debug
         if { $debug } { puts stderr "\[$cmd\]" }
         return "\[$cmd\]"
+    }
+
+    proc debugHint { context_var } {
+        return [regsub {.*SimpleTemplater::object\((.*)\)} $context_var {\1}]
+    }
+
+    proc objectExists { obj_var index { not_loop 0 } } {
+        variable nonExistantVar
+        variable nonExistantLoopVar
+        variable debug
+        upvar $obj_var object
+
+        set out ""
+        set found 0
+        if { [info exists object($index)] } {
+            set found 1
+            set out $object($index)
+        } elseif { $not_loop } {
+            set out $nonExistantVar
+        } else {
+            set out $nonExistantLoopVar
+        }
+        if { !$found && $debug } {
+            puts stderr "Please check your template var $index"
+        }
+        return $out
+    }
+
+    proc listExists { context index { not_loop 0 } } {
+        variable nonExistantVar
+        variable nonExistantLoopVar
+        variable debug
+
+        set out ""
+        set found 0
+        if { $context != $nonExistantVar && ($index > -1 && $index < [llength $context]) } {
+            set found 1
+            set out [lindex $context $index]
+        } elseif { $not_loop } {
+            set out $nonExistantVar
+        } else {
+            set out $nonExistantLoopVar
+        }
+
+        if { !$found && $debug } {
+            puts stderr "Index ($index) out of range"
+        }
+        return $out
+    }
+
+    proc dictExists { context index { not_loop 0 } } {
+        variable nonExistantVar
+        variable nonExistantLoopVar
+        variable debug
+
+        set out ""
+        set found 0
+        if { $context != "$nonExistantVar" && [dict exists $context $index] } {
+            set found 1
+            set out [dict get $context $index]
+        } elseif { $not_loop } {
+            set out $nonExistantVar
+        } else {
+            set out $nonExistantLoopVar
+        }
+
+        if { !$found && $::debug } {
+            puts stderr "Key ($index) not found"
+        }
+        return $out
     }
 
     proc registerFilter { args } {
@@ -143,12 +214,12 @@ namespace eval ::SimpleTemplater {
         if { $mainObj == "loop" && $rest == "count" } {
             set newObj "\$::SimpleTemplater::object(loop.count)"
         } else {
-            set newObj "\$::SimpleTemplater::object($mainObj)"
+            set newObj "\[::SimpleTemplater::objectExists ::SimpleTemplater::object $mainObj $not_loop\]"
             foreach index $rest {
                 if { [regexp "^\\d+$" $index] } {
-                    set newObj "\[lindex $newObj $index\]"
+                    set newObj "\[::SimpleTemplater::listExists $newObj $index $not_loop\]"
                 } elseif { [regexp "^\\w+$" $index]} {
-                    set newObj "\[dict get $newObj $index\]"
+                    set newObj "\[::SimpleTemplater::dictExists $newObj $index $not_loop\]"
                 }
             }
         }
@@ -384,6 +455,7 @@ namespace eval ::SimpleTemplater {
         variable loop
         variable loopCnt
         variable _bufferOut
+        variable nonExistantLoopVar
 
         set _bufferOut ""
         set html ""
@@ -391,6 +463,7 @@ namespace eval ::SimpleTemplater {
         set loop(last_loop) 0
         set loop(0) 0
         set loopCnt 0
+        set nonExistantLoopVar ""
         # array set object [uplevel subst [list $obj]]
         catch { unset object }
         array set object {}
