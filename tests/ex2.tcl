@@ -5,6 +5,7 @@ source SimpleTemplater.tcl
 source helper_filters.tcl
 
 # set ::SimpleTemplater::debug 1
+set ::SimpleTemplater::nonExistantVar "__INVALID_FIELD__"
 set begin [clock milliseconds]
 
 
@@ -34,9 +35,9 @@ proc Color { context } {
 
 ::SimpleTemplater::registerFilter -safe false -filter phone     -proc RegSub
 ::SimpleTemplater::registerFilter -safe false -filter prefix_ph -proc FormatPrefixedPhoneNumber
-::SimpleTemplater::registerFilter -safe false -filter bold      -proc ::SimpleTemplater::helper::filters::bold
-::SimpleTemplater::registerFilter -safe true  -filter italic    -proc ::SimpleTemplater::helper::filters::italic
-::SimpleTemplater::registerFilter -safe false -filter ulist     -proc ::SimpleTemplater::helper::filters::ulist
+::SimpleTemplater::registerFilter -safe false -filter bold      -proc ::SimpleTemplater::helper::html::bold
+::SimpleTemplater::registerFilter -safe true  -filter italic    -proc ::SimpleTemplater::helper::html::italic
+::SimpleTemplater::registerFilter -safe false -filter ulist     -proc ::SimpleTemplater::helper::html::ulist
 ::SimpleTemplater::registerFilter -safe true  -filter link      -proc HyperLink
 ::SimpleTemplater::registerFilter -safe false -filter modulus   -proc Modulus
 ::SimpleTemplater::registerFilter -safe false -filter color     -proc Color

@@ -1,5 +1,7 @@
 # Helper Filters
-namespace eval ::SimpleTemplater::helper::filters {
+namespace eval ::SimpleTemplater {}
+namespace eval ::SimpleTemplater::helper {}
+namespace eval ::SimpleTemplater::helper::html {
     proc bold { context } {
         return "<b>$context</b>"
     }
