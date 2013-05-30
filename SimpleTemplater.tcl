@@ -151,7 +151,7 @@ namespace eval ::SimpleTemplater {
 
         set out ""
         set found 0
-        if { [dict exists $context $index] } {
+        if { ![catch { dict exists $context $index } errMsg] && [dict exists $context $index] } {
             set found 1
             set out [dict get $context $index]
         } elseif { $not_loop } {
