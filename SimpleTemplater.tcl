@@ -5,7 +5,7 @@
 namespace eval ::SimpleTemplater {
 
     set debug 0
-    set nonExistantVar ""
+    set invalidTemplateString ""
     array set customFilter {}
     set functions {
         for
@@ -36,6 +36,27 @@ namespace eval ::SimpleTemplater {
     set functionEndPattern          "{% *end([join $functions |]) *%}"
 
     set lappendCmd                  "lappend ::SimpleTemplater::html"
+
+    proc setConfig { args } {
+        variable debug
+        variable invalidTemplateString
+
+        foreach key [dict keys $args]  {
+            switch -exact -- $key {
+                "-debug" {
+                    if { [dict get $args $key] == "true" } {
+                        set debug 1
+                    } elseif { [dict get $args $key] == "false" } {
+                        set debug 0
+                    }
+                }
+                "-invalid_template_string" {
+                    set invalidTemplateString [dict get $args $key]
+                }
+                default {}
+            }
+        }
+    }
 
     proc dquoteEscape { str } {
         return [regsub -all {"} $str {\"}]
@@ -80,8 +101,8 @@ namespace eval ::SimpleTemplater {
     }
 
     proc objectExists { obj_var index { not_loop 0 } } {
-        variable nonExistantVar
-        variable nonExistantLoopVar
+        variable invalidTemplateString
+        variable invalidTemplateLoopString
         variable debug
         upvar $obj_var object
 
@@ -91,9 +112,9 @@ namespace eval ::SimpleTemplater {
             set found 1
             set out $object($index)
         } elseif { $not_loop } {
-            set out $nonExistantVar
+            set out $invalidTemplateString
         } else {
-            set out $nonExistantLoopVar
+            set out $invalidTemplateLoopString
         }
         if { !$found && $debug } {
             puts stderr "Please check your template var $index"
@@ -102,19 +123,19 @@ namespace eval ::SimpleTemplater {
     }
 
     proc listExists { context index { not_loop 0 } } {
-        variable nonExistantVar
-        variable nonExistantLoopVar
+        variable invalidTemplateString
+        variable invalidTemplateLoopString
         variable debug
 
         set out ""
         set found 0
-        if { $context != $nonExistantVar && ($index > -1 && $index < [llength $context]) } {
+        if { $index > -1 && $index < [llength $context] } {
             set found 1
             set out [lindex $context $index]
         } elseif { $not_loop } {
-            set out $nonExistantVar
+            set out $invalidTemplateString
         } else {
-            set out $nonExistantLoopVar
+            set out $invalidTemplateLoopString
         }
 
         if { !$found && $debug } {
@@ -124,22 +145,22 @@ namespace eval ::SimpleTemplater {
     }
 
     proc dictExists { context index { not_loop 0 } } {
-        variable nonExistantVar
-        variable nonExistantLoopVar
+        variable invalidTemplateString
+        variable invalidTemplateLoopString
         variable debug
 
         set out ""
         set found 0
-        if { $context != "$nonExistantVar" && [dict exists $context $index] } {
+        if { [dict exists $context $index] } {
             set found 1
             set out [dict get $context $index]
         } elseif { $not_loop } {
-            set out $nonExistantVar
+            set out $invalidTemplateString
         } else {
-            set out $nonExistantLoopVar
+            set out $invalidTemplateLoopString
         }
 
-        if { !$found && $::debug } {
+        if { !$found && $debug } {
             puts stderr "Key ($index) not found"
         }
         return $out
@@ -455,7 +476,7 @@ namespace eval ::SimpleTemplater {
         variable loop
         variable loopCnt
         variable _bufferOut
-        variable nonExistantLoopVar
+        variable invalidTemplateLoopString
 
         set _bufferOut ""
         set html ""
@@ -463,7 +484,7 @@ namespace eval ::SimpleTemplater {
         set loop(last_loop) 0
         set loop(0) 0
         set loopCnt 0
-        set nonExistantLoopVar ""
+        set invalidTemplateLoopString ""
         # array set object [uplevel subst [list $obj]]
         catch { unset object }
         array set object {}
