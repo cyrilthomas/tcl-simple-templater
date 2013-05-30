@@ -8,9 +8,9 @@
         <table border="1">
             {% for addr in address_book %}
                 {% if loop.count|modulus:"2" == '1' %}
-                <tr style="{{ loop.count|modulus:"2" }}"><td colspan="2" style='text-align:center;'><b><i>[Modulus]</i></b></td></tr>
+                <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Modulus]</i></b></td></tr>
                 {% else %}
-                <tr style="{{ loop.count|modulus:"2" }}"><td colspan="2" style='text-align:center;'><b><i>[Not Modulus]</i></b></td></tr>
+                <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Not Modulus]</i></b></td></tr>
                 {% endif %}
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style="text-align:center;"><h4><i>{{ loop.count }}# {{ addr.name }}</i></h4></td></tr>
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>

@@ -4,8 +4,9 @@ lappend auto_path .
 source SimpleTemplater.tcl
 source helper_filters.tcl
 
-# set ::SimpleTemplater::debug 1
-set ::SimpleTemplater::nonExistantVar "__INVALID_FIELD__"
+::SimpleTemplater::setConfig -debug                     "false"
+::SimpleTemplater::setConfig -invalid_template_string   "INVALID_STRING"
+
 set begin [clock milliseconds]
 
 
