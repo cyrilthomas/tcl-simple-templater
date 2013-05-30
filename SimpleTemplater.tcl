@@ -217,6 +217,7 @@ namespace eval ::SimpleTemplater {
 
         variable debug
         variable customFilter
+        variable additionalAttributes
 
         set htmlEncode 0
         set tick 0
@@ -232,8 +233,8 @@ namespace eval ::SimpleTemplater {
         lappend objSplit {*}[split $object "."]
         set mainObj [lindex $objSplit 0]
         set rest [lrange $objSplit 1 end]
-        if { $mainObj == "loop" && $rest == "count" } {
-            set newObj "\$::SimpleTemplater::object(loop.count)"
+        if { $object in $additionalAttributes } {
+            set newObj "\[::SimpleTemplater::objectExists ::SimpleTemplater::object $object $not_loop\]"
         } else {
             set newObj "\[::SimpleTemplater::objectExists ::SimpleTemplater::object $mainObj $not_loop\]"
             foreach index $rest {
