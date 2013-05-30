@@ -34,6 +34,11 @@
             {% endfor %}
         </table>
         {{ sample|safe|ulist }}
+        <ol>
+        {% for a in splittest.data|hsplit %}
+            <li>{{a}}</li>
+        {% endfor %}
+        </ol>
         {% for x in samplex %}
             <p>I am a non-existant tag
         {% endfor %}

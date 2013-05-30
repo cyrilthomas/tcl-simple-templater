@@ -4,7 +4,7 @@ lappend auto_path .
 source SimpleTemplater.tcl
 source helper_filters.tcl
 
-::SimpleTemplater::setConfig -debug                     "false"
+# ::SimpleTemplater::setConfig -debug                     "true"
 ::SimpleTemplater::setConfig -invalid_template_string   "INVALID_STRING"
 
 set begin [clock milliseconds]
@@ -34,6 +34,10 @@ proc Color { context } {
     }
 }
 
+proc SplitHyphen { context } {
+    return [split $context -]
+}
+
 ::SimpleTemplater::registerFilter -safe false -filter phone     -proc RegSub
 ::SimpleTemplater::registerFilter -safe false -filter prefix_ph -proc FormatPrefixedPhoneNumber
 ::SimpleTemplater::registerFilter -safe false -filter bold      -proc ::SimpleTemplater::helper::html::bold
@@ -42,6 +46,7 @@ proc Color { context } {
 ::SimpleTemplater::registerFilter -safe true  -filter link      -proc HyperLink
 ::SimpleTemplater::registerFilter -safe false -filter modulus   -proc Modulus
 ::SimpleTemplater::registerFilter -safe false -filter color     -proc Color
+::SimpleTemplater::registerFilter -safe false -filter hsplit    -proc SplitHyphen
 
 puts [::SimpleTemplater::render ex2.tpl {
     address_book {
@@ -79,6 +84,9 @@ puts [::SimpleTemplater::render ex2.tpl {
     sample {
         a b c d
         e f g h
+    }
+    splittest {
+        data 10-20-30
     }
 }]
 
