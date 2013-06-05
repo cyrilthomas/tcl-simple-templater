@@ -248,9 +248,28 @@ You can explicitly mark a variable not to be escaped by applying a safe filter
 ```html
 <tr><td>Email</td><td>{{ addr.personal.email|safe }}</td></tr>
 ```
+
 ## Filters
+### Inbuilt Filters
 Usage: `{{ context_var|<filter> }}`
 #### safe
 `{{ context_var|safe }}` prevents your variable from being auto-escaped
 #### tick
 `{{ context_var|tick }}` converts all `'` in your variable to `´` after escaping
+
+### Custom Filters
+Create a new transformation procedure
+```tcl
+proc Modulus { context args } {
+    return [expr { $context % [lindex $args 0] }]
+}
+```
+
+Register the filter in your script
+```tcl
+::SimpleTemplater::registerFilter -filter modulus -proc Modulus
+# optional -safe true|false
+```
+
+Apply the filter in your template
+`{{ index|modulus:"10" }}`
