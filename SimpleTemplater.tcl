@@ -31,8 +31,9 @@ namespace eval ::SimpleTemplater {
     unset _op key val v
 
     set additionalAttributes        "loop.count"
-    set functionPattern             "{% *([join $functions |]) +(\\w+(?: *, *\\w+)*) +([join $operators |]) +(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes |]|'.*') *%}"
-    set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes |]|'.*') +([join $operators |]) +(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes |]|'.*') *%}"
+    set objectExpression_1          "(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes |]|'.*')"
+    set functionPattern             "{% *([join $functions |]) +(\\w+(?: *, *\\w+)*) +([join $operators |]) +$objectExpression_1 *%}"
+    set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +$objectExpression_1 +([join $operators |]) +$objectExpression_1 *%}"
     set functionEndPattern          "{% *end([join $functions |]) *%}"
 
     set lappendCmd                  "lappend ::SimpleTemplater::html"
@@ -118,6 +119,7 @@ namespace eval ::SimpleTemplater {
         }
         if { !$found && $debug } {
             puts stderr "Please check your template var $index"
+            # TODO: throw errors
         }
         return $out
     }
@@ -140,6 +142,7 @@ namespace eval ::SimpleTemplater {
 
         if { !$found && $debug } {
             puts stderr "Index ($index) out of range"
+            # TODO: throw errors
         }
         return $out
     }
@@ -162,6 +165,7 @@ namespace eval ::SimpleTemplater {
 
         if { !$found && $debug } {
             puts stderr "Key ($index) not found"
+            # TODO: throw errors
         }
         return $out
     }
