@@ -296,11 +296,12 @@ namespace eval ::SimpleTemplater {
             set it [string trim $it]
             lappend newIter ::SimpleTemplater::object($it)
         }
-        if { [regexp "'(.*)'" $limiter --> new_limiter] } {
-            return "foreach \{ $newIter \} \[list $new_limiter\] \{"
+        if { [regexp "'(.*)'" $limiter --> newLimiter] } {
+            set limiter "\[list $newLimiter\]"
         } else {
-            return "foreach \{ $newIter \} [processObject $limiter] \{"
+            set limiter [processObject $limiter]
         }
+        return "foreach \{ $newIter \} $limiter \{"
     }
 
     proc processFunc_if { params } {
@@ -311,13 +312,20 @@ namespace eval ::SimpleTemplater {
         set operator    [lindex $params 2]
         set limiter     [lindex $params 3]
 
+        regsub -all {([][$\\])} $iter {\\\1} iter       ;# disable command executions
         regsub -all {([][$\\])} $limiter {\\\1} limiter ;# disable command executions
         if { $operator ni $functionOperators($function) } { error "Unsupported operator '$operator' used!" }
-        if { [regexp "'(.*)'" $limiter --> new_limiter] } {
-            return "if \{ [processObject $iter] $operator \[list $new_limiter\] \} \{"
+        if { [regexp "'(.*)'" $limiter --> newLimiter] } {
+            set limiter "\[list $newLimiter\]"
         } else {
-            return "if \{ [processObject $iter] $operator [processObject $limiter] \} \{"
+            set limiter [processObject $limiter]
         }
+        if { [regexp "'(.*)'" $iter --> newIter] } {
+            set iter "\[list $newIter\]"
+        } else {
+            set iter [processObject $iter]
+        }
+        return "if \{ $iter $operator $limiter \} \{"
     }
 
     proc processFuncWithIndex_if { params } {
