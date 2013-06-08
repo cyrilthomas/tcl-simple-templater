@@ -519,7 +519,8 @@ namespace eval ::SimpleTemplater {
             codeGenerator $output
         }
         eval $output
-        unset object
-        return [join $html \n]
+        set output $html
+        unset object html
+        return [join $output \n]
     }
 }
