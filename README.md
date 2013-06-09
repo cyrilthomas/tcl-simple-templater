@@ -270,6 +270,7 @@ Register the filter in your script
 ::SimpleTemplater::registerFilter -filter modulus -proc Modulus
 # optional -safe true|false
 ```
+Syntax: `::SimpleTemplater::registerFilter -filter <filter_name> -safe <true|false> -proc <procedure_name>`
 
 Apply the filter in your template
 `{{ index|modulus:"10" }}`
