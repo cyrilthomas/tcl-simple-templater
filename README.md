@@ -182,7 +182,7 @@ Output
 ```
 #### Iterating simple static data
 ```html
-{% for a in 'hello world' %}
+{% for a in "hello world" %}
 <p>{{a}}</p> <!-- first hello second world -->
 {% endfor %}
 ```
@@ -195,8 +195,8 @@ Output
 #### Supports break and continue within for loops 
 *(may get discontinued as they are not usually supported in standard template parsers)*
 ```html
-{% for a in 'hello world' %}
-  {% if a == 'hello' %}
+{% for a in "hello world" %}
+  {% if a == "hello" %}
     {% continue %}
   {% endif %}
   <!-- do something -->
@@ -212,13 +212,13 @@ Output
 ```
 
 ```html
-{% if name.0 == 'John' %}
+{% if name.0 == "John" %}
  <!-- do something -->
 {% endif %}
 ```
 #### Optional else block
 ```html
-{% if name.0 == 'John' %}
+{% if name.0 == "John" %}
  <!-- do something -->
 {% else %}
  <!-- do something else-->
