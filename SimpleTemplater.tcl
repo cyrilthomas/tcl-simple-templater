@@ -31,7 +31,7 @@ namespace eval ::SimpleTemplater {
     unset _op key val v
 
     set additionalAttributes        "loop.count"
-    set objectExpression_1          "(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes |]|'.*')"
+    set objectExpression_1          "(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes |]|\".*\")"
     set functionPattern             "{% *([join $functions |]) +(\\w+(?: *, *\\w+)*) +([join $operators |]) +$objectExpression_1 *%}"
     set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +$objectExpression_1 +([join $operators |]) +$objectExpression_1 *%}"
     set functionEndPattern          "{% *end([join $functions |]) *%}"
@@ -170,6 +170,10 @@ namespace eval ::SimpleTemplater {
         return $out
     }
 
+    proc staticData { data } {
+        return "{$data}"
+    }
+
     proc registerFilter { args } {
         variable customFilter
 
@@ -296,8 +300,8 @@ namespace eval ::SimpleTemplater {
             set it [string trim $it]
             lappend newIter ::SimpleTemplater::object($it)
         }
-        if { [regexp "'(.*)'" $limiter --> newLimiter] } {
-            set limiter "\[list $newLimiter\]"
+        if { [regexp "\"(.*)\"" $limiter --> newLimiter] } {
+            set limiter [staticData $newLimiter]
         } else {
             set limiter [processObject $limiter]
         }
@@ -315,13 +319,13 @@ namespace eval ::SimpleTemplater {
         regsub -all {([][$\\])} $iter {\\\1} iter       ;# disable command executions
         regsub -all {([][$\\])} $limiter {\\\1} limiter ;# disable command executions
         if { $operator ni $functionOperators($function) } { error "Unsupported operator '$operator' used!" }
-        if { [regexp "'(.*)'" $limiter --> newLimiter] } {
-            set limiter "\[list $newLimiter\]"
+        if { [regexp "\"(.*)\"" $limiter --> newLimiter] } {
+            set limiter [staticData $newLimiter]
         } else {
             set limiter [processObject $limiter]
         }
-        if { [regexp "'(.*)'" $iter --> newIter] } {
-            set iter "\[list $newIter\]"
+        if { [regexp "\"(.*)\"" $iter --> newIter] } {
+            set iter [staticData {*}$newIter]
         } else {
             set iter [processObject $iter]
         }
