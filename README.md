@@ -37,7 +37,7 @@ Converts a HTML template like this
 ```
 when provided with the view data structure as
 ```tcl
-puts [::SimpleTemplater::render ex2.tpl {
+puts [::SimpleTemplater::render "/home/user/templates/ex2.tpl" {
     address_book {
         {
             name {John Doe}
@@ -120,7 +120,7 @@ into
 ```tcl
 source <file_path>/SimpleTemplater.tcl
 puts [::SimpleTemplater::render "<template_path>" {
-    <[Template Object Name]>    <[TCL Variable|String]>
+    <[Template Object_Name]>    <[TCL_Variable|String]>
 }]
 
 ```
