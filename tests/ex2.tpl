@@ -7,7 +7,7 @@
     <body>
         <table border="1">
             {% for addr in address_book %}
-                {% if loop.count|modulus:"2" == '1' %}
+                {% if loop.count|modulus:"2" == "1" %}
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Modulus]</i></b></td></tr>
                 {% else %}
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Not Modulus]</i></b></td></tr>
@@ -19,7 +19,7 @@
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td>Place</td><td>{{ addr.place }}</td></tr>
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td>Phone</td><td>{{ addr.phone|prefix_ph }}</td></tr>
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td>Website</td><td>{{ addr.url|link }}</td></tr>
-                {% if addr.personal != '' %}
+                {% if addr.personal != "" %}
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td>Phone</td><td>{{ addr.personal.phone|phone   }}</td></tr>
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td>Email</td><td>{{ addr.personal.email }}</td></tr>
@@ -27,7 +27,7 @@
                     <!-- optional else block -->
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
                 {% endif %}
-                {% for v1, v2, v3, v4 in sample %}
+                {% for v1, v2, v3, v4 in "sample1 sample2 sample3 sample5" %}
                      <tr><td>Notes {{loop.count}}</td><td>{{ v1 }} {{ v2 }} {{ v3 }} {{ v4 }}</td></tr>
                 {% endfor %}
                 <tr/>
