@@ -189,7 +189,7 @@ Output
 #### For loop count
 ```html
 {% for a in addr %}
-<p>{{ loop.count }}</p>
+<p>{{ loop.count }}</p> <!-- gives 1 2 3 4 .. the count starts with 1 for each for loop iteration -->
 {% endfor %}
 ```
 #### Supports break and continue within for loops 
@@ -244,7 +244,7 @@ instead of
 ```html
 <tr><td>Email</td><td><script type="text/javascript">alert('XSS');</script></td></tr>
 ```
-You can explicitly mark a variable not to be escaped by applying a safe filter
+You can explicitly mark a variable not to be escaped by applying a safe filter (filters mentioned below)
 ```html
 <tr><td>Email</td><td>{{ addr.personal.email|safe }}</td></tr>
 ```
@@ -280,7 +280,7 @@ View
 ```tcl
 proc Modulus { context args } {
     if { ![regexp {^\d+$} [lindex $args 0]] } { return 0 }
-	return [expr { $context % [lindex $args 0]}]
+	return [expr { $context % [lindex $args 0] }]
 }
 
 proc Class { context args } {
@@ -298,7 +298,7 @@ puts [::SimpleTemplater::render "/home/user/templates/sample.tpl" {
 ```
 
 Template
-```html
+```
 {% for ex in example %}
 ...
  <tr class="{{loop.count|modulus:"2"|class:"grey,white"}}">..</tr>
