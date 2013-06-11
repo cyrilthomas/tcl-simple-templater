@@ -274,3 +274,45 @@ Syntax: `::SimpleTemplater::registerFilter -filter <filter_name> -safe <true|fal
 
 Apply the filter in your template
 `{{ index|modulus:"10" }}`
+
+#### Example using chained filters
+View
+```tcl
+proc Modulus { context args } {
+    if { ![regexp {^\d+$} [lindex $args 0]] } { return 0 }
+	return [expr { $context % [lindex $args 0]}]
+}
+
+proc Class { context args } {
+	return [lindex $args $context]
+}
+
+::SimpleTemplater::registerFilter -filter modulus -proc Modulus
+::SimpleTemplater::registerFilter -filter class   -proc Class
+
+puts [::SimpleTemplater::render "/home/user/templates/sample.tpl" {
+    example {
+        .... ....
+    }
+}]
+```
+
+Template
+```html
+{% for ex in example %}
+...
+ <tr class="{{loop.count|modulus:"2"|class:"grey,white"}}">..</tr>
+...
+{% endfor %}
+```
+
+Output
+```html
+...
+ <tr class="white">..</tr>
+ <tr class="grey">..</tr>
+ <tr class="white">..</tr>
+ <tr class="grey">..</tr>
+ <tr class="white">..</tr>
+...
+```
