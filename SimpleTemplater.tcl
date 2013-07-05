@@ -188,14 +188,14 @@ namespace eval ::SimpleTemplater {
         set name [dict get $args "-filter"]
         set proc [dict get $args "-proc"]
         set customFilter($name) $proc
-        set customFilter($name,html_encode) 1
+        set customFilter($name,html_escape) 1
         set customFilter($name,tick) 0
 
         if { [dict exists $args "-safe"] } {
             if { [dict get $args "-safe"] == "true" } {
-                set customFilter($name,html_encode) 0
+                set customFilter($name,html_escape) 0
             } elseif { [dict get $args "-safe"] == "false" } {
-                set customFilter($name,html_encode) 1
+                set customFilter($name,html_escape) 1
             }
         }
 
@@ -208,13 +208,13 @@ namespace eval ::SimpleTemplater {
         }
     }
 
-    proc applyFilters { object filter html_encode_var tick_var } {
-        upvar $html_encode_var html_encode
+    proc applyFilters { object filter html_escape_var tick_var } {
+        upvar $html_escape_var html_escape
         upvar $tick_var tick
 
         switch $filter {
             safe {
-                set html_encode 0
+                set html_escape 0
             }
             tick {
                 set tick 1
@@ -280,7 +280,7 @@ namespace eval ::SimpleTemplater {
                 } else {
                     set newObj "\[$customFilter($filter) $newObj\]"
                 }
-                if { !$customFilter($filter,html_encode) } {
+                if { !$customFilter($filter,html_escape) } {
                     set htmlEscape 0
                 }
                 if { $customFilter($filter,tick) } {
