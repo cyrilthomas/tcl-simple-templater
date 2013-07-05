@@ -85,6 +85,14 @@ namespace eval ::SimpleTemplater {
         return $str
     }
 
+    proc urlEscape { url } {
+        # to be implemented!
+    }
+
+    proc escapeJS { url } {
+        # to be implemented!
+    }
+
     proc bufferOut { msg } {
         variable _bufferOut
 
@@ -211,10 +219,13 @@ namespace eval ::SimpleTemplater {
             tick {
                 set tick 1
             }
-            test {
-                # new filters could be added like-wise
-                set object "\[list $object\]"
-                # set object "\[::SimpleTemplater::newFilterProc $object\]"
+            urlescape {
+                # to be implemented!
+                # set object "\[urlEscape $object\]"
+            }
+            escapejs {
+                # to be implemented!
+                # set object "\[escapeJS $object\]"
             }
             default {}
         }
