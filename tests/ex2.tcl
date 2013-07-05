@@ -37,6 +37,10 @@ proc SplitHyphen { context } {
     return [split $context -]
 }
 
+proc AddName { context name_obj } {
+    return "$context [SimpleTemplater::getContext $name_obj]"
+}
+
 ::SimpleTemplater::registerFilter -safe false -filter phone     -proc RegSub
 ::SimpleTemplater::registerFilter -safe false -filter prefix_ph -proc FormatPrefixedPhoneNumber
 ::SimpleTemplater::registerFilter -safe false -filter bold      -proc ::SimpleTemplater::helper::html::bold
@@ -46,6 +50,7 @@ proc SplitHyphen { context } {
 ::SimpleTemplater::registerFilter -safe false -filter modulus   -proc Modulus
 ::SimpleTemplater::registerFilter -safe false -filter color     -proc Color
 ::SimpleTemplater::registerFilter -safe false -filter hsplit    -proc SplitHyphen
+::SimpleTemplater::registerFilter -safe false -filter addname   -proc AddName
 
 puts [::SimpleTemplater::render ex2.tpl {
     address_book {

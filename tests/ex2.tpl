@@ -28,7 +28,7 @@
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
                 {% endif %}
                 {% for v1, v2, v3, v4 in "sample1 sample2 sample3 sample5" %}
-                     <tr><td>Notes {{loop.count}}</td><td>{{ v1 }} {{ v2 }} {{ v3 }} {{ v4 }}</td></tr>
+                     <tr><td>Notes {{loop.count}}</td><td>{{ v1|addname:"addr.name" }} {{ v2 }} {{ v3 }} {{ v4 }}</td></tr>
                 {% endfor %}
                 <tr/>
             {% endfor %}

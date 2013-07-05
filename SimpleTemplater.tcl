@@ -286,6 +286,10 @@ namespace eval ::SimpleTemplater {
         return $newObj
     }
 
+    proc getContext { str } {
+        return [subst [processObject $str]]
+    }
+
     proc processFunc_for { params } {
         variable functionOperators
 
