@@ -71,7 +71,7 @@ namespace eval ::SimpleTemplater {
         return $str
     }
 
-    proc htmlEncode { str { tick 0 } } {
+    proc htmlEscape { str { tick 0 } } {
         regsub -all {&} $str {\&amp;}       str
         regsub -all {"} $str {\&quot;}      str
         regsub -all {<} $str {\&lt;}        str
@@ -227,10 +227,10 @@ namespace eval ::SimpleTemplater {
         variable customFilter
         variable additionalAttributes
 
-        set htmlEncode 0
+        set htmlEscape 0
         set tick 0
         if { $not_loop } {
-            set htmlEncode 1
+            set htmlEscape 1
         }
 
         lappend objSplit {*}[split $object |]
@@ -270,18 +270,18 @@ namespace eval ::SimpleTemplater {
                     set newObj "\[$customFilter($filter) $newObj\]"
                 }
                 if { !$customFilter($filter,html_encode) } {
-                    set htmlEncode 0
+                    set htmlEscape 0
                 }
                 if { $customFilter($filter,tick) } {
                     set tick 1
                 }
                 continue
             }
-            set newObj [applyFilters $newObj $filter htmlEncode tick]
+            set newObj [applyFilters $newObj $filter htmlEscape tick]
         }
 
-        if { $htmlEncode } {
-            return "\[::SimpleTemplater::htmlEncode $newObj $tick\]"
+        if { $htmlEscape } {
+            return "\[::SimpleTemplater::htmlEscape $newObj $tick\]"
         }
         return $newObj
     }
