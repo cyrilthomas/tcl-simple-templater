@@ -1,7 +1,6 @@
 #!/usr/bin/tclsh
 
-lappend auto_path .
-source SimpleTemplater.tcl
+source ../SimpleTemplater.tcl
 
 set data {
         item_nos        "[list 10 20 30]"
@@ -40,7 +39,7 @@ set data {
 }
 
 proc execExample { html } {
-    set tmpl_file "/tmp/tmpl_[pid].htm"
+    set tmpl_file "tmpl_[pid].htm"
     set fh [open $tmpl_file w]
     puts $fh $html
     close $fh

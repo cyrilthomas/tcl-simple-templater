@@ -1,7 +1,6 @@
 #!/usr/bin/tclsh
 
-lappend auto_path .
-source SimpleTemplater.tcl
+source ../SimpleTemplater.tcl
 
 
 # set ::SimpleTemplater::debug 1

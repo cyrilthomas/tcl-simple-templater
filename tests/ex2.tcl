@@ -1,8 +1,7 @@
 #!/usr/bin/tclsh
 
-lappend auto_path .
-source SimpleTemplater.tcl
-source helper_filters.tcl
+source ../SimpleTemplater.tcl
+source ../helper_filters.tcl
 
 # ::SimpleTemplater::setConfig -debug                     "true"
 ::SimpleTemplater::setConfig -invalid_template_string   "INVALID_STRING"
