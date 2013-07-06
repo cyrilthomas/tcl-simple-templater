@@ -288,12 +288,14 @@ namespace eval ::SimpleTemplater {
                 }
                 continue
             }
+            if { $debug } { puts stderr "No customFilter '$filter' found, looking inbuilt filters" }
             set newObj [applyFilters $newObj $filter htmlEscape tick]
         }
 
         if { $htmlEscape } {
             return "\[::SimpleTemplater::htmlEscape $newObj $tick\]"
         }
+        if { $debug } { puts stderr "final object : '$newObj'" }
         return $newObj
     }
 
@@ -303,6 +305,7 @@ namespace eval ::SimpleTemplater {
 
     proc processFunc_for { params } {
         variable functionOperators
+        variable debug
 
         set function    [lindex $params 0]
         set iter        [lindex $params 1]
@@ -315,9 +318,11 @@ namespace eval ::SimpleTemplater {
             set it [string trim $it]
             lappend newIter ::SimpleTemplater::object($it)
         }
-        if { [regexp "\"(.*)\"" $limiter --> newLimiter] } {
+        if { [regexp "^\"(.*)\"$" $limiter --> newLimiter] } {
+            if { $debug } { puts stderr "Static limiter: '$limiter'"}
             set limiter [staticData $newLimiter]
         } else {
+            if { $debug } { puts stderr "Dynamic limiter: '$limiter'"}
             set limiter [processObject $limiter]
         }
         return "foreach \{ $newIter \} $limiter \{"
@@ -325,6 +330,7 @@ namespace eval ::SimpleTemplater {
 
     proc processFunc_if { params } {
         variable functionOperators
+        variable debug
 
         set function    [lindex $params 0]
         set iter        [lindex $params 1]
@@ -334,14 +340,18 @@ namespace eval ::SimpleTemplater {
         regsub -all {([][$\\])} $iter {\\\1} iter       ;# disable command executions
         regsub -all {([][$\\])} $limiter {\\\1} limiter ;# disable command executions
         if { $operator ni $functionOperators($function) } { error "Unsupported operator '$operator' used!" }
-        if { [regexp "\"(.*)\"" $limiter --> newLimiter] } {
+        if { [regexp "^\"(.*)\"$" $limiter --> newLimiter] } {
+            if { $debug } { puts stderr "Static limiter: '$limiter'"}
             set limiter [staticData $newLimiter]
         } else {
+            if { $debug } { puts stderr "Dynamic limiter: '$limiter'"}
             set limiter [processObject $limiter]
         }
-        if { [regexp "\"(.*)\"" $iter --> newIter] } {
+        if { [regexp "^\"(.*)\"$" $iter --> newIter] } {
+            if { $debug } { puts stderr "Static iter: '$iter'"}
             set iter [staticData {*}$newIter]
         } else {
+            if { $debug } { puts stderr "Dynamic iter: '$iter'"}
             set iter [processObject $iter]
         }
         return "if \{ $iter $operator $limiter \} \{"
