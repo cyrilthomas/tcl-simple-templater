@@ -31,11 +31,10 @@ namespace eval ::SimpleTemplater {
     unset _op key val v
 
     set additionalAttributes        "loop.count"
-    set objectExpression_1          "(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes |]|\".*\")"
-    set functionPattern             "{% *([join $functions |]) +(\\w+(?: *, *\\w+)*) +([join $operators |]) +$objectExpression_1 *%}"
-    set functionPatternWithIndex    "{% *([join $functionsWithIndex |]) +$objectExpression_1 +([join $operators |]) +$objectExpression_1 *%}"
-    set functionEndPattern          "{% *end([join $functions |]) *%}"
-
+    set objectExpression_1          "(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes "|"]|\".*\")"
+    set functionPattern             "{% *([join $functions "|"]) +(\\w+(?: *, *\\w+)*) +([join $operators "|"]) +$objectExpression_1 *%}"
+    set functionPatternWithIndex    "{% *([join $functionsWithIndex "|"]) +$objectExpression_1 +([join $operators "|"]) +$objectExpression_1 *%}"
+    set functionEndPattern          "{% *end([join $functions "|"]) *%}"
     set lappendCmd                  "lappend ::SimpleTemplater::html"
 
     proc setConfig { args } {
@@ -43,7 +42,7 @@ namespace eval ::SimpleTemplater {
         variable invalidTemplateString
 
         foreach key [dict keys $args]  {
-            switch -exact -- $key {
+            switch $key {
                 "-debug" {
                     if { [dict get $args $key] == "true" } {
                         set debug 1
@@ -65,22 +64,22 @@ namespace eval ::SimpleTemplater {
 
     proc error2Html { str } {
         # regsub -all {(\{|\}|\")} $str {\\\1} str
-        regsub -all {\r\n} $str {<br/>} str
-        regsub -all {\n} $str {<br/>} str
-        regsub -all { } $str {\&nbsp;} str
+        regsub -all "\\r\\n" $str "<br/>" str
+        regsub -all "\\n" $str "<br/>" str
+        regsub -all " " $str "\\&nbsp;" str
         return $str
     }
 
     proc htmlEscape { str { tick 0 } } {
-        regsub -all {&} $str {\&amp;}       str
-        regsub -all {"} $str {\&quot;}      str
-        regsub -all {<} $str {\&lt;}        str
-        regsub -all {>} $str {\&gt;}        str
+        regsub -all "&" $str "\\&amp;" str
+        regsub -all "\"" $str "\\&quot;" str
+        regsub -all "<" $str "\\&lt;" str
+        regsub -all ">" $str "\\&gt;" str
 
         if { $tick } {
-            regsub -all {'} $str {\&#8217;}     str
+            regsub -all "'" $str "\\&#8217;" str
         } else {
-            regsub -all {'} $str {\&#39;}       str
+            regsub -all "'" $str "\\&#39;" str
         }
         return $str
     }
@@ -233,7 +232,6 @@ namespace eval ::SimpleTemplater {
     }
 
     proc processObject { object { not_loop 0 } } {
-
         variable debug
         variable customFilter
         variable additionalAttributes
@@ -244,7 +242,7 @@ namespace eval ::SimpleTemplater {
             set htmlEscape 1
         }
 
-        lappend objSplit {*}[split $object |]
+        lappend objSplit {*}[split $object "|"]
         set object [lindex $objSplit 0]
         set transformFuncs [lrange $objSplit 1 end]
         if { $debug } { puts stderr "object : '$object' transform functions: '$transformFuncs'" }
@@ -266,7 +264,7 @@ namespace eval ::SimpleTemplater {
         }
 
         foreach _filter $transformFuncs {
-            foreach { filter _args } [split $_filter :] { break }
+            foreach { filter _args } [split $_filter ":"] { break }
             set filter [string trim $filter]
             set args ""
             set _args [string trim [string trim $_args] "\""]
@@ -564,7 +562,7 @@ namespace eval ::SimpleTemplater {
         }
         # parray object
         set template ""
-        regsub "\\r\\n" $str {\n} str
+        regsub "\\r\\n" $str "\\n" str
         foreach line [split $str "\n"] {
             lappend template $line
         }
