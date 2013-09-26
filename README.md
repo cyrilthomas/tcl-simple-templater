@@ -192,18 +192,6 @@ Output
 <p>{{ loop.count }}</p> <!-- gives 1 2 3 4 .. the count starts with 1 for each for loop iteration -->
 {% endfor %}
 ```
-#### Supports break and continue within for loops 
-*(may get discontinued as they are not usually supported in standard template parsers)*
-```html
-{% for a in "hello world" %}
-  {% if a == "hello" %}
-    {% continue %}
-  {% endif %}
-  <!-- do something -->
-{% endfor %}
-```
-*Break can be also used in a similar fashion ```{% break %}```*
-
 ### If loop syntax
 ```html
 {% if name.0 == name.1 %}

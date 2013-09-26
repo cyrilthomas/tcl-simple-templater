@@ -104,9 +104,6 @@ set example {
     <body>
         <table border="1">
             {% for item_list in rows %}
-                {% if item_list.0 == "hello" %}
-                    {% continue %}
-                {% endif %}
                 <td>{{ loop.count }}</td>
             {% endfor %}
         </table>
@@ -121,9 +118,6 @@ set example {
     <body>
         <table border="1">
             {% for item_list in rows %}
-                {% if item_list.0 == "hello" %}
-                    {% break %}
-                {% endif %}
                 <td>{{ loop.count }}</td>
             {% endfor %}
         </table>

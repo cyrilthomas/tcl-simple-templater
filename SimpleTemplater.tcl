@@ -481,18 +481,6 @@ namespace eval ::SimpleTemplater {
                 continue
             }
 
-            if { [regexp "(^\\s*){% *continue *%}" $line --> indent] } {
-                set indent "${indent}[string repeat " " [string length $lappendCmd]][string repeat " " 4]"
-                bufferOut "${indent}continue"
-                continue
-            }
-
-            if { [regexp "(^\\s*){% *break *%}" $line --> indent] } {
-                set indent "${indent}[string repeat " " [string length $lappendCmd]][string repeat " " 4]"
-                bufferOut "${indent}break"
-                continue
-            }
-
             if { [regexp "(^\\s*)$functionEndPattern" $line --> indent function_close] } {
                 set function [lindex $call_stack end]
                 set call_stack [lrange $call_stack 0 end-1]
