@@ -511,9 +511,8 @@ namespace eval ::SimpleTemplater {
         return [join $_bufferOut \n]
     }
 
-    proc render { template obj } {
+    proc init {} {
         variable object
-        variable debug
         variable html
         variable loop
         variable loopCnt
@@ -527,14 +526,23 @@ namespace eval ::SimpleTemplater {
         set loop(0) 0
         set loopCnt 0
         set invalidTemplateLoopString ""
-        # array set object [uplevel subst [list $obj]]
-        catch { unset object }
-        array set object {}
+        array set object [list]
+    }
+
+    proc render { template obj } {
+        variable object
+        variable debug
+        variable html
+        variable loop
+        variable loopCnt
+        variable _bufferOut
+        variable invalidTemplateLoopString
+
+        init
         foreach { var val } $obj {
             array set object [list $var [uplevel subst [list $val]]]
         }
         # parray object
-
         set fh [open $template r]
         set template ""
         while { ![eof $fh] } {
@@ -550,6 +558,37 @@ namespace eval ::SimpleTemplater {
         eval $output
         set output $html
         unset object html
-        return [join $output \n]
+        return [join $output "\n"]
+    }
+
+    proc renderString { str obj } {
+        variable object
+        variable debug
+        variable html
+        variable loop
+        variable loopCnt
+        variable _bufferOut
+        variable invalidTemplateLoopString
+
+        init
+        foreach { var val } $obj {
+            array set object [list $var [uplevel subst [list $val]]]
+        }
+        # parray object
+        set template ""
+        regsub "\\r\\n" $str {\n} str
+        foreach line [split $str "\n"] {
+            lappend template $line
+        }
+        set output [parser template]
+
+        if { $debug } {
+            puts stderr $output
+            codeGenerator $output
+        }
+        eval $output
+        set output $html
+        unset object html
+        return [join $output "\n"]
     }
 }
