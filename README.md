@@ -21,7 +21,7 @@ Converts a HTML template like this
                 <tr><td>Lastname</td><td>{{ addr.name.1 }}</td></tr>
                 <tr><td>Place</td><td>{{ addr.place }}</td></tr>
                 <tr><td>Phone</td><td>{{ addr.phone }}</td></tr>
-                {% if addr.personal != "" %}
+                {% if addr.personal %}
                     <tr><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
                     <tr><td>Phone</td><td>{{ addr.personal.phone }}</td></tr>
                     <tr><td>Email</td><td>{{ addr.personal.email }}</td></tr>

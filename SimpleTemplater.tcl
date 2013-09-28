@@ -34,6 +34,7 @@ namespace eval ::SimpleTemplater {
     set objectExpression_1          "(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes "|"]|\".*\")"
     set functionPattern             "{% *([join $functions "|"]) +(\\w+(?: *, *\\w+)*) +([join $operators "|"]) +$objectExpression_1 *%}"
     set functionPatternWithIndex    "{% *([join $functionsWithIndex "|"]) +$objectExpression_1 +([join $operators "|"]) +$objectExpression_1 *%}"
+    set functionPatternTruthCheck   "{% *(if) +$objectExpression_1 +%}"
     set functionEndPattern          "{% *end([join $functions "|"]) *%}"
     set lappendCmd                  "lappend ::SimpleTemplater::html"
 
@@ -359,6 +360,26 @@ namespace eval ::SimpleTemplater {
         processFunc_if $params
     }
 
+    proc processFuncTruthiness_if { params } {
+        variable functionOperators
+        variable debug
+
+        set function    [lindex $params 0]
+        set var         [lindex $params 1]
+
+        regsub -all {([][$\\])} $var {\\\1} var       ;# disable command executions
+
+        if { [regexp "^\"(.*)\"$" $var --> newVar] } {
+            if { $debug } { puts stderr "Static variable: '$var'"}
+            set var [staticData {*}$newVar]
+        } else {
+            if { $debug } { puts stderr "Dynamic variable: '$var'"}
+            set var [processObject $var]
+        }
+
+        return "if \{ ($var ne \"\") && ($var != 0) \} \{"
+    }
+
     proc processLine { line } {
         variable debug
         variable loop
@@ -426,6 +447,7 @@ namespace eval ::SimpleTemplater {
         variable functionPattern
         variable functionEndPattern
         variable functionPatternWithIndex
+        variable functionPatternTruthCheck
         variable lappendCmd
         variable _bufferOut
 
@@ -460,6 +482,13 @@ namespace eval ::SimpleTemplater {
                 set params [list $function $iter $operator $limiter]
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
                 bufferOut "${indent}[processFuncWithIndex_${function} $params]"
+                continue
+            } elseif { [regexp "(^\\s*)$functionPatternTruthCheck" $line --> indent function var] } {
+                if { $debug } { puts stderr "function:$function variable:$var" }
+                lappend call_stack $function
+                set params [list $function $var]
+                set indent "${indent}[string repeat " " [string length $lappendCmd]]"
+                bufferOut "${indent}[processFuncTruthiness_${function} $params]"
                 continue
             }
 

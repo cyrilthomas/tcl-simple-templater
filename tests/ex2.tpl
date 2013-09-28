@@ -19,7 +19,7 @@
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td>Place</td><td>{{ addr.place }}</td></tr>
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td>Phone</td><td>{{ addr.phone|prefix_ph }}</td></tr>
                 <tr style="{{ loop.count|modulus:"2"|color }}"><td>Website</td><td>{{ addr.url|link }}</td></tr>
-                {% if addr.personal != "" %}
+                {% if addr.personal %}
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td>Phone</td><td>{{ addr.personal.phone|phone   }}</td></tr>
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td>Email</td><td>{{ addr.personal.email }}</td></tr>
