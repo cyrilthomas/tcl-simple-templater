@@ -526,21 +526,26 @@ namespace eval ::SimpleTemplater {
         return [join $_bufferOut \n]
     }
 
+    proc flushHtml {} {
+        variable html
+
+        set output $html
+        unset html
+        return [join $output "\n"]
+    }
+
     proc init {} {
         variable object
-        variable html
         variable loop
-        variable loopCnt
-        variable _bufferOut
-        variable invalidTemplateLoopString
+        variable html ""
+        variable loopCnt 0
+        variable _bufferOut ""
+        variable invalidTemplateLoopString ""
 
-        set _bufferOut ""
-        set html ""
-        set output ""
-        set loop(last_loop) 0
-        set loop(0) 0
-        set loopCnt 0
-        set invalidTemplateLoopString ""
+        array set loop [list \
+            last_loop 0 \
+            0 0 \
+        ]
         array set object [list]
     }
 
@@ -571,9 +576,8 @@ namespace eval ::SimpleTemplater {
             codeGenerator $output
         }
         eval $output
-        set output $html
-        unset object html
-        return [join $output "\n"]
+        unset object output
+        return [flushHtml]
     }
 
     proc renderString { str obj } {
@@ -602,8 +606,45 @@ namespace eval ::SimpleTemplater {
             codeGenerator $output
         }
         eval $output
-        set output $html
-        unset object html
-        return [join $output "\n"]
+        unset object output
+        return [flushHtml]
     }
+
+    proc compile { template } {
+        variable compileCnt
+
+        set ns "st[incr compileCnt]_[clock milliseconds]"
+        set fh [open $template r]
+        set template ""
+        while { ![eof $fh] } {
+            lappend template [gets $fh]
+        }
+        close $fh
+
+        init
+
+        namespace eval ::${ns} {
+            namespace export execute destroy
+            namespace ensemble create
+        }
+
+        set ::${ns}::code [parser template]
+
+        proc ::${ns}::execute { data } {
+            ::SimpleTemplater::init
+            foreach { var val } $data {
+                array set ::SimpleTemplater::object [list $var [uplevel subst [list $val]]]
+            }
+            eval [set [namespace current]::code]
+            unset ::SimpleTemplater::object
+            return [::SimpleTemplater::flushHtml]
+        }
+
+        proc ::${ns}::destroy {} {
+            namespace delete [namespace current]
+        }
+
+        return $ns
+    }
+
 }

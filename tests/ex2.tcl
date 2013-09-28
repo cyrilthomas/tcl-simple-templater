@@ -4,7 +4,7 @@ source ../SimpleTemplater.tcl
 source ../helper_filters.tcl
 
 # ::SimpleTemplater::setConfig -debug                     "true"
-::SimpleTemplater::setConfig -invalid_template_string   "INVALID_STRING"
+::SimpleTemplater::setConfig -invalid_template_string   ""
 
 set begin [clock milliseconds]
 
@@ -52,7 +52,7 @@ proc AddName { context name_obj } {
 ::SimpleTemplater::registerFilter -safe false -filter hsplit    -proc SplitHyphen
 ::SimpleTemplater::registerFilter -safe false -filter addname   -proc AddName
 
-puts [::SimpleTemplater::render ex2.tpl {
+::SimpleTemplater::render ex2.tpl {
     address_book {
         {
             name {John Doe}
@@ -92,7 +92,45 @@ puts [::SimpleTemplater::render ex2.tpl {
     splittest {
         data 10-20-30
     }
-}]
+}
 
 set end [clock milliseconds]
 puts stderr "Completed rendering in [expr $end - $begin] ms"
+
+set begin [clock milliseconds]
+set compiledTemplate [::SimpleTemplater::compile ex2.tpl]
+set end [clock milliseconds]
+puts stderr "Completed template parsing in [expr $end - $begin] ms"
+
+set begin [clock milliseconds]
+puts [$compiledTemplate execute {
+    address_book {
+        {
+            name {John Doe}
+            place {USA}
+            phone {1369664972}
+            personal {
+                phone   "001-123-12345"
+                email   "john.doe@e-mail.com"
+            }
+            url {http://www.google.com}
+        }
+    }
+}]
+set end [clock milliseconds]
+puts stderr "Completed rendering in [expr $end - $begin] ms"
+$compiledTemplate execute {
+    address_book {
+        {
+            name {John Doe}
+            place {USA}
+            phone {1369664972}
+            personal {
+                phone   "001-123-12345"
+                email   "john.doe@e-mail.com"
+            }
+            url {http://www.google.com}
+        }
+    }
+}
+$compiledTemplate destroy
