@@ -220,10 +220,16 @@ puts [$my_template execute {
 <p>Novak Djokovic, Andy Murray</p>
 ```
 #### Iterating simple static data
+#####`Template`
 ```html
 {% for a in "hello world" %}
 <p>{{a}}</p> <!-- first hello second world -->
 {% endfor %}
+```
+#####`Output`
+```html
+<p>hello</p>
+<p>world</p>
 ```
 #### Inbuit loop counter
 #####`View`
@@ -280,11 +286,6 @@ puts [$my_template execute {
 ```
 #### Truthiness check
 ```html
-{% if name %}
- <!-- do something -->
-{% endif %}
-```
-```html
 {% if not name %}
  <!-- do something -->
 {% endif %}
@@ -292,6 +293,52 @@ puts [$my_template execute {
 {% if !name %}
  <!-- do something -->
 {% endif %}
+```
+#####`View`
+```
+{
+    members {
+    	{
+    		active 1
+    		name "John Doe"
+    	}
+    	{
+    		active 0
+    		name "Philip Alex"
+    	}
+    }
+}
+```
+#####`Template`
+```html
+Active members:
+<table>
+{% for mem in members %}
+	{% if mem.active %}
+		<tr><td>{{ mem.name }}</td></tr>
+	{% endif %}
+{% endfor %}
+</table>
+
+Inactive members:
+<table>
+{% for mem in members %}
+    {% if not mem.active %}
+        <tr><td>{{ mem.name }}</td></tr>
+    {% endif %}
+{% endfor %}
+</table>
+```
+#####`Output`
+```html
+Active members:
+<table>
+		<tr><td>John Doe</td></tr>
+</table>
+Inactive members:
+<table>
+		<tr><td>Philip Alex</td></tr>
+</table>
 ```
 ## Auto-escaping
 Any variable used within the template would be auto-escaped.
