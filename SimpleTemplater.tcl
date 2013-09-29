@@ -544,10 +544,12 @@ namespace eval ::SimpleTemplater {
         variable _bufferOut ""
         variable invalidTemplateLoopString ""
 
+        array unset loop
         array set loop [list \
             last_loop 0 \
             0 0 \
         ]
+        array unset object
         array set object [list]
     }
 
