@@ -23,7 +23,8 @@
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td>Phone</td><td>{{ addr.personal.phone|phone   }}</td></tr>
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td>Email</td><td>{{ addr.personal.email }}</td></tr>
-                {% else %}
+                {% endif %}
+                {% if not addr.personal %}
                     <!-- optional else block -->
                     <tr style="{{ loop.count|modulus:"2"|color }}"><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
                 {% endif %}

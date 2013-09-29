@@ -34,7 +34,7 @@ namespace eval ::SimpleTemplater {
     set objectExpression_1          "(\\w+(?:\\.\\d+|\\.\\w+|\\|\\S+)*|[join $additionalAttributes "|"]|\".*\")"
     set functionPattern             "{% *([join $functions "|"]) +(\\w+(?: *, *\\w+)*) +([join $operators "|"]) +$objectExpression_1 *%}"
     set functionPatternWithIndex    "{% *([join $functionsWithIndex "|"]) +$objectExpression_1 +([join $operators "|"]) +$objectExpression_1 *%}"
-    set functionPatternTruthCheck   "{% *(if) +$objectExpression_1 +%}"
+    set functionPatternTruthCheck   "{% *(if) +(not |!)? *$objectExpression_1 +%}"
     set functionEndPattern          "{% *end([join $functions "|"]) *%}"
     set lappendCmd                  "lappend ::SimpleTemplater::html"
 
@@ -365,7 +365,8 @@ namespace eval ::SimpleTemplater {
         variable debug
 
         set function    [lindex $params 0]
-        set var         [lindex $params 1]
+        set operator    [lindex $params 1]
+        set var         [lindex $params 2]
 
         regsub -all {([][$\\])} $var {\\\1} var       ;# disable command executions
 
@@ -377,7 +378,8 @@ namespace eval ::SimpleTemplater {
             set var [processObject $var]
         }
 
-        return "if \{ ($var ne \"\") && ($var != 0) \} \{"
+        if { $operator ne "" } { set operator "!" }
+        return "if \{ ${operator}(($var ne \"\") && ($var != 0)) \} \{"
     }
 
     proc processLine { line } {
@@ -483,10 +485,10 @@ namespace eval ::SimpleTemplater {
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
                 bufferOut "${indent}[processFuncWithIndex_${function} $params]"
                 continue
-            } elseif { [regexp "(^\\s*)$functionPatternTruthCheck" $line --> indent function var] } {
-                if { $debug } { puts stderr "function:$function variable:$var" }
+            } elseif { [regexp "(^\\s*)$functionPatternTruthCheck" $line --> indent function operator var] } {
+                if { $debug } { puts stderr "function:$function operator: $operator variable:$var" }
                 lappend call_stack $function
-                set params [list $function $var]
+                set params [list $function $operator $var]
                 set indent "${indent}[string repeat " " [string length $lappendCmd]]"
                 bufferOut "${indent}[processFuncTruthiness_${function} $params]"
                 continue

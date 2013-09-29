@@ -3,7 +3,7 @@
 source ../SimpleTemplater.tcl
 source ../helper_filters.tcl
 
-# ::SimpleTemplater::setConfig -debug                     "true"
+::SimpleTemplater::setConfig -debug                     "true"
 ::SimpleTemplater::setConfig -invalid_template_string   ""
 
 set begin [clock milliseconds]
@@ -115,6 +115,33 @@ puts [$compiledTemplate execute {
             }
             url {http://www.google.com}
         }
+
+        {
+            name {David's Beck}
+            place {England}
+            phone {1469664972}
+            personal {}
+            url {http://www.facebook.com}
+        }
+
+        {
+            name "Sam Philip"
+            place {Australia}
+            phone {1569664972}
+            personal "[list \
+                phone   "007-134-4567" \
+                email   "sam.philip@e-mail.com" \
+            ]"
+            url {http://www.yahoo.com}
+        }
+    }
+
+    sample {
+        a b c d
+        e f g h
+    }
+    splittest {
+        data 10-20-30
     }
 }]
 set end [clock milliseconds]
