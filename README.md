@@ -122,26 +122,33 @@ source <file_path>/SimpleTemplater.tcl
 puts [::SimpleTemplater::render "<template_path>" {
     <[Template Object_Name]>    <[TCL_Variable|String]>
 }]
-
 ```
-### Variables
+#### Pre-compiled templates for faster executions
+```tcl
+source <file_path>/SimpleTemplater.tcl
+set my_template [::SimpleTemplater::compile "<template_path>"]
+puts [$my_template execute {
+    <[Template Object_Name]>    <[TCL_Variable|String]>
+}]
+```
+### Template language
 #### Simple variables
-View
+#####`View`
 ``` 
 {
     name {John}
 }
 ```
-Template
+#####`Template`
 ```
 <p>Hello {{name}}</p>
 ```
-Output
+#####`Output`
 ```
 <p>Hello John</p>
 ```
 #### Nested data structures
-View
+#####`View`
 ```
 {
     address {
@@ -155,13 +162,13 @@ View
     }
 }
 ```
-Template
+#####`Template`
 ```
 {% for addr in address %}
    <p>{{loop.count}} Firstname: {{addr.name.0}}</p>
 {% endfor %}
 ```
-Output
+#####`Output`
 ```
 <p>1 Firstname: John</p>
 <p>2 Firstname: Philip</p>
@@ -169,16 +176,48 @@ Output
 *A list element can be accessed by providing the numeric index `{{ context_var.index }}` and a key-value dictionary styled list element can be accessed providing the key as the index `{{ context_var.key }}`*
 ### For loop syntax
 #### Single iterator
+#####`View`
 ```
-{% for a in addr %}
-<p>{{a}}</p>
+{
+    players {
+    	{Rafael Nadal}
+    	{Roger Federer}
+    }
+}
+```
+#####`Template`
+```html
+{% for person in players %}
+<p>{{person}}</p>
 {% endfor %}
+```
+#####`Output`
+```html
+<p>Rafael Nadal</p>
+<p>Roger Federer</p>
 ```
 #### Multi-iterator
+#####`View`
+```
+{
+    players {
+    	{Rafael Nadal}
+    	{Roger Federer}
+    	{Novak Djokovic}
+    	{Andy Murray}
+    }
+}
+```
+#####`Template`
 ```html
-{% for a,b,c,d in addr %}
-<p>{{a}} {{b}} {{c}} {{d}}</p>
+{% for person1, person2 in players %}
+<p>{{person1}}, {{person2}}</p>
 {% endfor %}
+```
+#####`Output`
+```html
+<p>Rafael Nadal, Roger Federer</p>
+<p>Novak Djokovic, Andy Murray</p>
 ```
 #### Iterating simple static data
 ```html
@@ -186,17 +225,44 @@ Output
 <p>{{a}}</p> <!-- first hello second world -->
 {% endfor %}
 ```
-#### For loop count
+#### Inbuit loop counter
+#####`View`
+```
+{
+    players {
+    	{Rafael Nadal}
+    	{Roger Federer}
+    }
+}
+```
+#####`Template`
 ```html
-{% for a in addr %}
-<p>{{ loop.count }}</p> <!-- gives 1 2 3 4 .. the count starts with 1 for each for loop iteration -->
+{% for person in players %}
+<p>{{ loop.count }}. {{ person }}</p>
 {% endfor %}
 ```
+#####`Output`
+```html
+<p>1. Rafael Nadal</p>
+<p>2. Roger Federer</p>
+```
 ### If loop syntax
+##### If loop supports the operators `(in < > <= >= ni == !=)`
+#####`View`
+```
+{
+    name {John John}
+}
+```
+#####`Template`
 ```html
 {% if name.0 == name.1 %}
 <p>You have an interesting name!</p>
 {% endif %}
+```
+#####`Output`
+```html
+<p>You have an interesting name!</p>
 ```
 
 ```html
@@ -212,7 +278,21 @@ Output
  <!-- do something else-->
 {% endif %} 
 ```
-if loop supports the following (in < > <= >= ni == !=)
+#### Truthiness check
+```html
+{% if name %}
+ <!-- do something -->
+{% endif %}
+```
+```html
+{% if not name %}
+ <!-- do something -->
+{% endif %}
+<!-- OR -->
+{% if !name %}
+ <!-- do something -->
+{% endif %}
+```
 ## Auto-escaping
 Any variable used within the template would be auto-escaped.
 Consider an email id of a person saved as 
