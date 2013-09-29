@@ -193,6 +193,7 @@ Output
 {% endfor %}
 ```
 ### If loop syntax
+##### if loop supports the operators `(in < > <= >= ni == !=)`
 ```html
 {% if name.0 == name.1 %}
 <p>You have an interesting name!</p>
@@ -212,7 +213,21 @@ Output
  <!-- do something else-->
 {% endif %} 
 ```
-if loop supports the following (in < > <= >= ni == !=)
+#### Truthiness check
+```html
+{% if name %}
+ <!-- do something -->
+{% endif %}
+```
+```html
+{% if not name %}
+ <!-- do something -->
+{% endif %}
+<!-- OR -->
+{% if !name %}
+ <!-- do something -->
+{% endif %}
+```
 ## Auto-escaping
 Any variable used within the template would be auto-escaped.
 Consider an email id of a person saved as 
