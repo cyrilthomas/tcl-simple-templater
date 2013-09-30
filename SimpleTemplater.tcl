@@ -556,6 +556,15 @@ namespace eval ::SimpleTemplater {
         return $template
     }
 
+    proc loadData { obj_var } {
+        variable object
+        upvar $obj_var obj
+
+        foreach { var val } $obj {
+            array set object [list $var [uplevel subst [list $val]]]
+        }
+    }
+
     proc init {} {
         variable object
         variable loop
@@ -583,9 +592,7 @@ namespace eval ::SimpleTemplater {
         variable invalidTemplateLoopString
 
         init
-        foreach { var val } $obj {
-            array set object [list $var [uplevel subst [list $val]]]
-        }
+        loadData obj
         # parray object
         set template [readTemplate $template]
         set output [parser template]
@@ -609,9 +616,7 @@ namespace eval ::SimpleTemplater {
         variable invalidTemplateLoopString
 
         init
-        foreach { var val } $obj {
-            array set object [list $var [uplevel subst [list $val]]]
-        }
+        loadData obj
         # parray object
         set template ""
         regsub "\\r\\n" $str "\\n" str
@@ -646,9 +651,7 @@ namespace eval ::SimpleTemplater {
 
         proc ::${ns}::execute { data } {
             ::SimpleTemplater::init
-            foreach { var val } $data {
-                array set ::SimpleTemplater::object [list $var [uplevel subst [list $val]]]
-            }
+            ::SimpleTemplater::loadData data
             eval [set [namespace current]::code]
             unset ::SimpleTemplater::object
             return [::SimpleTemplater::flushHtml]
