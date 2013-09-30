@@ -36,7 +36,7 @@ namespace eval ::SimpleTemplater {
     set functionPatternWithIndex    "{% *([join $functionsWithIndex "|"]) +$objectExpression_1 +([join $operators "|"]) +$objectExpression_1 *%}"
     set functionPatternTruthCheck   "{% *(if) +(not |!)? *$objectExpression_1 +%}"
     set functionEndPattern          "{% *end([join $functions "|"]) *%}"
-    set lappendCmd                  "lappend ::SimpleTemplater::html"
+    set lappendCmd                  "lappend ::SimpleTemplater::renderedData"
 
     proc setConfig { args } {
         variable debug
@@ -528,11 +528,11 @@ namespace eval ::SimpleTemplater {
         return [join $_bufferOut \n]
     }
 
-    proc flushHtml {} {
-        variable html
+    proc flushRenderedData {} {
+        variable renderedData
 
-        set output $html
-        unset html
+        set output $renderedData
+        unset renderedData
         return [join $output "\n"]
     }
 
@@ -568,7 +568,7 @@ namespace eval ::SimpleTemplater {
     proc init {} {
         variable object
         variable loop
-        variable html ""
+        variable renderedData ""
         variable loopCnt 0
         variable _bufferOut ""
         variable invalidTemplateLoopString ""
@@ -585,7 +585,6 @@ namespace eval ::SimpleTemplater {
     proc render { template obj } {
         variable object
         variable debug
-        variable html
         variable loop
         variable loopCnt
         variable _bufferOut
@@ -603,13 +602,12 @@ namespace eval ::SimpleTemplater {
         }
         eval $output
         unset object output
-        return [flushHtml]
+        return [flushRenderedData]
     }
 
     proc renderString { str obj } {
         variable object
         variable debug
-        variable html
         variable loop
         variable loopCnt
         variable _bufferOut
@@ -631,7 +629,7 @@ namespace eval ::SimpleTemplater {
         }
         eval $output
         unset object output
-        return [flushHtml]
+        return [flushRenderedData]
     }
 
     proc compile { template } {
@@ -654,7 +652,7 @@ namespace eval ::SimpleTemplater {
             ::SimpleTemplater::loadData data
             eval [set [namespace current]::code]
             unset ::SimpleTemplater::object
-            return [::SimpleTemplater::flushHtml]
+            return [::SimpleTemplater::flushRenderedData]
         }
 
         proc ::${ns}::destroy {} {
