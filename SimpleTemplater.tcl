@@ -561,7 +561,7 @@ namespace eval ::SimpleTemplater {
         upvar $obj_var obj
 
         foreach { var val } $obj {
-            array set object [list $var [uplevel subst [list $val]]]
+            array set object [list $var [uplevel 2 subst [list $val]]]
         }
     }
 
