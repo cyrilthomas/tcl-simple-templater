@@ -536,6 +536,26 @@ namespace eval ::SimpleTemplater {
         return [join $output "\n"]
     }
 
+    proc readTemplate { template_file } {
+        set template ""
+        set error 0
+        set fh [open $template_file r]
+
+        if { [catch {
+            while { ![eof $fh] } {
+                lappend template [gets $fh]
+            }
+        } errMsg] } {
+            set errorinfo $::errorInfo
+            set error 1
+        }
+
+        close $fh
+
+        if { $error } { return -code "error" -errorinfo "file read error:\n$errorinfo" $errMsg }
+        return $template
+    }
+
     proc init {} {
         variable object
         variable loop
@@ -567,12 +587,7 @@ namespace eval ::SimpleTemplater {
             array set object [list $var [uplevel subst [list $val]]]
         }
         # parray object
-        set fh [open $template r]
-        set template ""
-        while { ![eof $fh] } {
-            lappend template [gets $fh]
-        }
-        close $fh
+        set template [readTemplate $template]
         set output [parser template]
 
         if { $debug } {
@@ -618,12 +633,7 @@ namespace eval ::SimpleTemplater {
         variable compileCnt
 
         set ns "st[incr compileCnt]_[clock milliseconds]"
-        set fh [open $template r]
-        set template ""
-        while { ![eof $fh] } {
-            lappend template [gets $fh]
-        }
-        close $fh
+        set template [readTemplate $template]
 
         init
 
