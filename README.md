@@ -126,10 +126,11 @@ puts [::SimpleTemplater::render "<template_path>" {
 #### Pre-compiled templates for faster executions
 ```tcl
 source <file_path>/SimpleTemplater.tcl
-set my_template [::SimpleTemplater::compile "<template_path>"]
-puts [$my_template execute {
+set compiled_template [::SimpleTemplater::compile "<template_path>"]
+puts [$compiled_template execute {
     <[Template Object_Name]>    <[TCL_Variable|String]>
 }]
+$compiled_template destroy
 ```
 ### Template language
 #### Simple variables
