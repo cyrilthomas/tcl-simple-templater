@@ -19,7 +19,7 @@ Hi {{ name|capitalize }},
 
 Regards,
 {{ ceo|capitalize }}
-" {
-    name $candidate
-    ceo "ALEX"
-}]
+" [dict create \
+    name $candidate \
+    ceo "ALEX" \
+]]

@@ -44,8 +44,8 @@ puts [::SimpleTemplater::render "/home/user/templates/ex2.tpl" {
             place {USA}
             phone {001}
             personal {
-                phone   "001-123-12345"
-                email   "john.doe@e-mail.com"
+                phone   {001-123-12345}
+                email   {john.doe@e-mail.com}
             }
 
         }
@@ -58,13 +58,13 @@ puts [::SimpleTemplater::render "/home/user/templates/ex2.tpl" {
         }
 
         {
-            name "Sam Philip"
+            name {Sam Philip}
             place {Australia}
             phone {003}
-            personal "[list \
-                phone   "007-134-4567" \
-                email   "sam.philip@e-mail.com" \
-            ]"
+            personal {
+                phone   {007-134-4567}
+                email   {sam.philip@e-mail.com}
+            }
         }
     }
 }]

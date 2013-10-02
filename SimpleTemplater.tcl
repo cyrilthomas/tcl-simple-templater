@@ -560,9 +560,7 @@ namespace eval ::SimpleTemplater {
         variable object
         upvar $obj_var obj
 
-        foreach { var val } $obj {
-            array set object [list $var [uplevel 2 subst [list $val]]]
-        }
+        array set object $obj
     }
 
     proc init {} {

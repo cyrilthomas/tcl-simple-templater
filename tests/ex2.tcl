@@ -110,8 +110,8 @@ puts [$compiledTemplate execute {
             place {USA}
             phone {1369664972}
             personal {
-                phone   "001-123-12345"
-                email   "john.doe@e-mail.com"
+                phone   {001-123-12345}
+                email   {john.doe@e-mail.com}
             }
             url {http://www.google.com}
         }
@@ -125,13 +125,13 @@ puts [$compiledTemplate execute {
         }
 
         {
-            name "Sam Philip"
+            name {Sam Philip}
             place {Australia}
             phone {1569664972}
-            personal "[list \
-                phone   "007-134-4567" \
-                email   "sam.philip@e-mail.com" \
-            ]"
+            personal {
+                phone   {007-134-4567}
+                email   {sam.philip@e-mail.com}
+            }
             url {http://www.yahoo.com}
         }
     }
@@ -141,7 +141,7 @@ puts [$compiledTemplate execute {
         e f g h
     }
     splittest {
-        data 10-20-30
+        data {10-20-30}
     }
 }]
 set end [clock milliseconds]
