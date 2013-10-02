@@ -117,10 +117,11 @@ into
 ::SimpleTemplater::render "<template_path>" "<view>"
 ```
 ## Usage
+#### Render file templates
 ```tcl
 source <file_path>/SimpleTemplater.tcl
 puts [::SimpleTemplater::render "<template_path>" {
-    <[Template Object_Name]>    <[TCL_Variable|String]>
+    <[Template Object_Name]>    <[Value]>
 }]
 ```
 #### Pre-compiled templates for faster executions
@@ -128,9 +129,16 @@ puts [::SimpleTemplater::render "<template_path>" {
 source <file_path>/SimpleTemplater.tcl
 set compiled_template [::SimpleTemplater::compile "<template_path>"]
 puts [$compiled_template execute {
-    <[Template Object_Name]>    <[TCL_Variable|String]>
+    <[Template Object_Name]>    <[Value]>
 }]
 $compiled_template destroy
+```
+#### Render string templates
+```tcl
+source <file_path>/SimpleTemplater.tcl
+puts [::SimpleTemplater::renderString "<template_string>" {
+    <[Template Object_Name]>    <[Value]>
+}]
 ```
 ### Template language
 #### Simple variables
