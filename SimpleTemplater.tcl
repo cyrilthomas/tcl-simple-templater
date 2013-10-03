@@ -1,6 +1,7 @@
 #!/usr/bin/tclsh
 
 # A Simple Template Parser
+package provide "SimpleTemplater" 0.1
 
 namespace eval ::SimpleTemplater {
 

@@ -119,14 +119,14 @@ into
 ## Usage
 #### Render file templates
 ```tcl
-source <file_path>/SimpleTemplater.tcl
+package require "SimpleTemplater"
 puts [::SimpleTemplater::render "<template_path>" {
     <[Template Object_Name]>    <[Value]>
 }]
 ```
 #### Pre-compiled templates for faster executions
 ```tcl
-source <file_path>/SimpleTemplater.tcl
+package require "SimpleTemplater"
 set compiled_template [::SimpleTemplater::compile "<template_path>"]
 puts [$compiled_template execute {
     <[Template Object_Name]>    <[Value]>
@@ -135,7 +135,7 @@ $compiled_template destroy
 ```
 #### Render string templates
 ```tcl
-source <file_path>/SimpleTemplater.tcl
+package require "SimpleTemplater"
 puts [::SimpleTemplater::renderString "<template_string>" {
     <[Template Object_Name]>    <[Value]>
 }]

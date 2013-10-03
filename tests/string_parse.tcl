@@ -1,6 +1,7 @@
 #!/usr/bin/tclsh
 
-source ../SimpleTemplater.tcl
+lappend auto_path ../
+package require "SimpleTemplater"
 
 proc Capitalize { context args } {
     set cap [list]

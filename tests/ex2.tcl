@@ -1,6 +1,8 @@
 #!/usr/bin/tclsh
 
-source ../SimpleTemplater.tcl
+lappend auto_path ../
+package require "SimpleTemplater"
+
 source ../helper_filters.tcl
 
 ::SimpleTemplater::setConfig -debug                     "true"

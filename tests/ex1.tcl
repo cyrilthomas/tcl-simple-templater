@@ -1,7 +1,7 @@
 #!/usr/bin/tclsh
 
-source ../SimpleTemplater.tcl
-
+lappend auto_path ../
+package require "SimpleTemplater"
 
 # set ::SimpleTemplater::debug 1
 set begin [clock milliseconds]
