@@ -40,30 +40,30 @@ when provided with the view data structure as
 puts [::SimpleTemplater::render "/home/user/templates/ex2.tpl" {
     address_book {
         {
-            name {John Doe}
-            place {USA}
-            phone {001}
+            name "John Doe"
+            place "USA"
+            phone "001"
             personal {
-                phone   {001-123-12345}
-                email   {john.doe@e-mail.com}
+                phone   "001-123-12345"
+                email   "john.doe@e-mail.com"
             }
 
         }
 
         {
-            name {David Beck}
-            place {England}
-            phone {002}
-            personal {}
+            name "David Beck"
+            place "England"
+            phone "002"
+            personal ""
         }
 
         {
-            name {Sam Philip}
-            place {Australia}
-            phone {003}
+            name "Sam Philip"
+            place "Australia"
+            phone "003"
             personal {
-                phone   {007-134-4567}
-                email   {sam.philip@e-mail.com}
+                phone   "007-134-4567"
+                email   "sam.philip@e-mail.com"
             }
         }
     }
