@@ -123,6 +123,33 @@ package require "SimpleTemplater"
 puts [::SimpleTemplater::render "<template_path>" {
     <[Template Object_Name]>    <[Value]>
 }]
+# eg.
+puts [::SimpleTemplater::render "states.tpl" [dict create \
+    states [list \
+        [dict create \
+            name "Alabama" \
+            cities [list \
+                [dict create \
+                    name "auburn" \
+                ] \
+                [dict create \
+                    name "birmingham" \
+                ] \
+            ] \
+        ] \
+        [dict create \
+            name "Alaska" \
+            cities [list \
+                [dict create \
+                    name "anchorage" \
+                ] \
+                [dict create \
+                    name "fairbanks" \
+                ] \
+            ] \
+        ] \
+    ] \
+]]
 ```
 #### Pre-compiled templates for faster executions
 ```tcl
