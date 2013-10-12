@@ -7,32 +7,27 @@ Converts a HTML template like this
 ```html
 <!-- File ex2.tpl -->
 <html>
-    <header>
-        <script type="text/javascript">
-            alert('Welcome');
-        </script>
-    </header>
-    <body>
-        <table border="1">
-            {% for addr in address_book %}
-                <tr><td colspan="2" style="text-align:center;"><h4><i>{{ loop.count }}# {{ addr.name }}</i></h4></td></tr>
-                <tr><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
-                <tr><td>Firstname</td><td>{{ addr.name.0 }}</td></tr>
-                <tr><td>Lastname</td><td>{{ addr.name.1 }}</td></tr>
-                <tr><td>Place</td><td>{{ addr.place }}</td></tr>
-                <tr><td>Phone</td><td>{{ addr.phone }}</td></tr>
-                {% if addr.personal %}
-                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
-                    <tr><td>Phone</td><td>{{ addr.personal.phone }}</td></tr>
-                    <tr><td>Email</td><td>{{ addr.personal.email }}</td></tr>
-                {% else %}
-                    <!-- optional else block -->
-                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
-                {% endif %}
-                <tr/>
-            {% endfor %}
-        </table>
-    </body>
+  <body>
+    {% for addr in address_book %}
+      <p>{{loop.count}}. <b>{{addr.name}}</b></p>
+      <i>[Professional]</i>
+      <ul>
+        <li>Firstname : {{addr.name.0}}</li>
+        <li>Lastname : {{addr.name.1}}</li>
+        <li>Place : {{addr.place}}</li>
+        <li>Phone : {{addr.phone}}</li>
+      </ul>
+      {% if addr.personal %}
+        <i>[Personal]</i>
+        <ul>
+          <li>Phone : {{addr.personal.phone}}</li>
+          <li>Email : {{addr.personal.email}}</li>
+        </ul>
+      {% else %}
+        <i>[Personal info not available]</i>
+      {% endif %}
+    {% endfor %}
+  </body>
 </html>
 ```
 when provided with the view data structure as
@@ -72,44 +67,43 @@ puts [::SimpleTemplater::render "/home/user/templates/ex2.tpl" {
 into 
 ```html
 <html>
-    <header>
-        <script type="text/javascript">
-            alert('Welcome');
-        </script>
-    </header>
-    <body>
-        <table border="1">
-                <tr><td colspan="2" style="text-align:center;"><h4><i>1# John Doe</i></h4></td></tr>
-                <tr><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
-                <tr><td>Firstname</td><td>John</td></tr>
-                <tr><td>Lastname</td><td>Doe</td></tr>
-                <tr><td>Place</td><td>USA</td></tr>
-                <tr><td>Phone</td><td>001</td></tr>                
-                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
-                    <tr><td>Phone</td><td>001-123-12345</td></tr>
-                    <tr><td>Email</td><td>john.doe@e-mail.com</td></tr>
-                <tr/>
-                <tr><td colspan="2" style="text-align:center;"><h4><i>2# David Beck</i></h4></td></tr>
-                <tr><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
-                <tr><td>Firstname</td><td>David</td></tr>
-                <tr><td>Lastname</td><td>Beck</td></tr>
-                <tr><td>Place</td><td>England</td></tr>
-                <tr><td>Phone</td><td>002</td></tr>                
-                    <!-- optional else block -->
-                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal info not available]</i></b></td></tr>
-                <tr/>
-                <tr><td colspan="2" style="text-align:center;"><h4><i>3# Sam Philip</i></h4></td></tr>
-                <tr><td colspan="2" style='text-align:center;'><b><i>[Professional]</i></b></td></tr>
-                <tr><td>Firstname</td><td>Sam</td></tr>
-                <tr><td>Lastname</td><td>Philip</td></tr>
-                <tr><td>Place</td><td>Australia</td></tr>
-                <tr><td>Phone</td><td>003</td></tr>                
-                    <tr><td colspan="2" style='text-align:center;'><b><i>[Personal]</i></b></td></tr>
-                    <tr><td>Phone</td><td>007-134-4567</td></tr>
-                    <tr><td>Email</td><td>sam.philip@e-mail.com</td></tr>
-                <tr/>
-        </table>
-    </body>
+  <body>
+      <p>1. <b>John Doe</b></p>
+      <i>[Professional]</i>
+      <ul>
+        <li>Firstname : John</li>
+        <li>Lastname : Doe</li>
+        <li>Place : USA</li>
+        <li>Phone : 1369664972</li>
+      </ul>
+        <i>[Personal]</i>
+        <ul>
+          <li>Phone : 001-123-12345</li>
+          <li>Email : john.doe@e-mail.com</li>
+        </ul>
+      <p>2. <b>David&#39;s Beck</b></p>
+      <i>[Professional]</i>
+      <ul>
+        <li>Firstname : David&#39;s</li>
+        <li>Lastname : Beck</li>
+        <li>Place : England</li>
+        <li>Phone : 1469664972</li>
+      </ul>
+        <i>[Personal info not available]</i>
+      <p>3. <b>Sam Philip</b></p>
+      <i>[Professional]</i>
+      <ul>
+        <li>Firstname : Sam</li>
+        <li>Lastname : Philip</li>
+        <li>Place : Australia</li>
+        <li>Phone : 1569664972</li>
+      </ul>
+        <i>[Personal]</i>
+        <ul>
+          <li>Phone : 007-134-4567</li>
+          <li>Email : sam.philip@e-mail.com</li>
+        </ul>
+  </body>
 </html>
 ```
 ## Syntax
