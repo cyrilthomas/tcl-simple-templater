@@ -81,10 +81,10 @@ into
           <li>Phone : 001-123-12345</li>
           <li>Email : john.doe@e-mail.com</li>
         </ul>
-      <p>2. <b>David&#39;s Beck</b></p>
+      <p>2. <b>David Beck</b></p>
       <i>[Professional]</i>
       <ul>
-        <li>Firstname : David&#39;s</li>
+        <li>Firstname : David</li>
         <li>Lastname : Beck</li>
         <li>Place : England</li>
         <li>Phone : 1469664972</li>
